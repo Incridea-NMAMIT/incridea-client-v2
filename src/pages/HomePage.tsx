@@ -17,7 +17,7 @@ function HomePage() {
   return (
     <main className="relative isolate overflow-hidden rounded-3xl border border-slate-800 bg-slate-950/90 shadow-2xl shadow-slate-950/40">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(56,189,248,0.18),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(248,113,113,0.14),transparent_35%),radial-gradient(circle_at_50%_80%,rgba(52,211,153,0.18),transparent_32%)]" />
-      <div className="absolute inset-0 bg-[url('/incridea.png.png')] bg-[length:420px] bg-center bg-no-repeat opacity-10" aria-hidden />
+      <div className="absolute inset-0 bg-[url('/incridea.png.png')] bg-size-[420px] bg-center bg-no-repeat opacity-10" aria-hidden />
 
       <section className="relative grid min-h-[70vh] gap-8 px-6 py-10 lg:grid-cols-[1fr_1fr] lg:px-12 lg:py-14">
         <div className="flex flex-col justify-center gap-6">

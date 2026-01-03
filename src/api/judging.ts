@@ -17,7 +17,6 @@ export interface JudgeRound {
     Criteria: {
         id: number
         name: string
-        type: 'NUMBER' | 'TEXT' | 'TIME'
     }[]
 }
 
@@ -87,7 +86,26 @@ export const deleteWinner = async (winnerId: number) => {
     return data
 }
 
+
 export const updateRoundStatus = async (eventId: number, roundNo: number, selectStatus: boolean) => {
     const { data } = await apiClient.patch(`/judge/events/${eventId}/rounds/${roundNo}/status`, { selectStatus })
+    return data
+}
+
+export const getWinnersByEvent = async (eventId: number) => {
+    const { data } = await apiClient.get<{ winners: Winner[] }>(`/judge/events/${eventId}/winners`)
+    return data
+}
+
+// Reusing Winner Interface but backend returns additional relations (Event, Team Members). 
+// Since TS interface is used for strict typing, we might need a looser type or extended type for CSV.
+// But for now, returning `any[]` or extending type is fine to unblock.
+export const getAllWinners = async () => {
+    const { data } = await apiClient.get<{ winners: any[] }>(`/judge/winners/all`)
+    return data
+}
+
+export const getScoreSheet = async (eventId: number, roundNo: number) => {
+    const { data } = await apiClient.get<{ teams: any[] }>(`/judge/events/${eventId}/rounds/${roundNo}/scoresheet`)
     return data
 }

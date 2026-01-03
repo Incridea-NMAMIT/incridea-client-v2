@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type { Round, TeamMember } from '../../api/organiser'
 import { createRound, deleteRound, addJudge, removeJudge, addCriteria, deleteCriteria, searchUsers, deleteQuiz } from '../../api/organiser'
@@ -7,6 +7,7 @@ import QuizQRCode from './quiz/QuizQRCode'
 import QuizLeaderboard from './quiz/QuizLeaderboard'
 import { showToast } from '../../utils/toast'
 import { FiPlus, FiTrash2, FiUserPlus } from 'react-icons/fi'
+import { useSocket } from '../../hooks/useSocket'
 
 interface RoundsTabProps {
     eventId: number
@@ -16,7 +17,34 @@ interface RoundsTabProps {
 
 export default function RoundsTab({ eventId, rounds, token }: RoundsTabProps) {
     const queryClient = useQueryClient()
+    const { socket } = useSocket()
     const [selectedRoundIndex, setSelectedRoundIndex] = useState(0)
+
+    // Invalidate query on mount
+    useEffect(() => {
+        queryClient.invalidateQueries({ queryKey: ['organiser-event', String(eventId)] })
+    }, [eventId, queryClient])
+
+    // Socket Listener for Quiz Updates
+    useEffect(() => {
+        if (!socket || !eventId) return
+        
+        const room = `event-${eventId}`
+        socket.emit('join-room', room)
+        
+        const handleQuizUpdate = (data: { eventId: number }) => {
+            if (data.eventId === Number(eventId)) {
+                queryClient.invalidateQueries({ queryKey: ['organiser-event', String(eventId)] })
+            }
+        }
+        
+        socket.on('QUIZ_UPDATED', handleQuizUpdate)
+        
+        return () => {
+             socket.emit('leave-room', room)
+             socket.off('QUIZ_UPDATED', handleQuizUpdate)
+        }
+    }, [socket, eventId, queryClient])
 
     // Judge Add State
     const [isAddJudgeOpen, setIsAddJudgeOpen] = useState(false)
@@ -31,10 +59,18 @@ export default function RoundsTab({ eventId, rounds, token }: RoundsTabProps) {
     // Criteria Add State
     const [isAddCriteriaOpen, setIsAddCriteriaOpen] = useState(false)
     const [newCriteriaName, setNewCriteriaName] = useState('')
-    const [newCriteriaType, setNewCriteriaType] = useState('NUMBER')
+    const [newCriteriaScoreOutOf, setNewCriteriaScoreOutOf] = useState(10)
 
-    // Derived current round
-    const currentRound = rounds[selectedRoundIndex]
+    // Derived current round - Handle empty rounds case safely
+    const currentRound = rounds.length > 0 ? rounds[selectedRoundIndex] : null
+
+    // Helper to safely set Round Index
+    useEffect(() => {
+        if (selectedRoundIndex >= rounds.length && rounds.length > 0) {
+            setSelectedRoundIndex(rounds.length - 1)
+        }
+    }, [rounds.length, selectedRoundIndex])
+
 
     // Mutations
     const createRoundMutation = useMutation({
@@ -58,7 +94,7 @@ export default function RoundsTab({ eventId, rounds, token }: RoundsTabProps) {
     
     // Judge Mutations
     const addJudgeMutation = useMutation({
-        mutationFn: (userId: number) => addJudge(eventId, currentRound.roundNo, userId, token),
+        mutationFn: (userId: number) => addJudge(eventId, currentRound!.roundNo, userId, token),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['organiser-event', String(eventId)] })
             setIsAddJudgeOpen(false)
@@ -70,7 +106,7 @@ export default function RoundsTab({ eventId, rounds, token }: RoundsTabProps) {
     })
 
     const removeJudgeMutation = useMutation({
-        mutationFn: (userId: number) => removeJudge(eventId, currentRound.roundNo, userId, token),
+        mutationFn: (userId: number) => removeJudge(eventId, currentRound!.roundNo, userId, token),
         onSuccess: () => {
              queryClient.invalidateQueries({ queryKey: ['organiser-event', String(eventId)] })
              showToast('Judge removed', 'success')
@@ -80,18 +116,19 @@ export default function RoundsTab({ eventId, rounds, token }: RoundsTabProps) {
 
     // Criteria Mutations
     const addCriteriaMutation = useMutation({
-        mutationFn: () => addCriteria(eventId, currentRound.roundNo, { name: newCriteriaName, type: newCriteriaType }, token),
+        mutationFn: () => addCriteria(eventId, currentRound!.roundNo, { name: newCriteriaName, scoreOutOf: newCriteriaScoreOutOf }, token),
         onSuccess: () => {
              queryClient.invalidateQueries({ queryKey: ['organiser-event', String(eventId)] })
              setIsAddCriteriaOpen(false)
              setNewCriteriaName('')
+             setNewCriteriaScoreOutOf(10)
              showToast('Criteria added', 'success')
         },
         onError: (err: any) => showToast(err.response?.data?.message || 'Failed to add criteria', 'error')
     })
 
     const deleteCriteriaMutation = useMutation({
-        mutationFn: (id: number) => deleteCriteria(eventId, currentRound.roundNo, id, token),
+        mutationFn: (id: number) => deleteCriteria(eventId, currentRound!.roundNo, id, token),
         onSuccess: () => {
              queryClient.invalidateQueries({ queryKey: ['organiser-event', String(eventId)] })
              showToast('Criteria deleted', 'success')
@@ -126,20 +163,20 @@ export default function RoundsTab({ eventId, rounds, token }: RoundsTabProps) {
         if(newCriteriaName) addCriteriaMutation.mutate()
     }
 
-    if (isQuizEditorOpen) {
+    if (isQuizEditorOpen && currentRound) {
         return <QuizEditor eventId={eventId} roundId={currentRound.roundNo} token={token} onClose={() => setIsQuizEditorOpen(false)} />
     }
 
     return (
         <div className="space-y-6">
-            {isQuizQROpen && currentRound.Quiz && (
+            {isQuizQROpen && currentRound?.Quiz && (
                 <QuizQRCode 
                     quizId={currentRound.Quiz.id} 
                     quizName={currentRound.Quiz.name} 
                     onClose={() => setIsQuizQROpen(false)} 
                 />
             )}
-            {isQuizLeaderboardOpen && currentRound.Quiz && (
+            {isQuizLeaderboardOpen && currentRound?.Quiz && (
                 <QuizLeaderboard
                     eventId={eventId}
                     roundNo={currentRound.roundNo}
@@ -186,146 +223,148 @@ export default function RoundsTab({ eventId, rounds, token }: RoundsTabProps) {
                     </div>
 
                     {/* Main Content Area */}
-                    <div className="flex-1 space-y-6">
-                        {/* Round Header */}
-                        <div className="flex justify-between items-center border-b border-slate-800 pb-4">
-                            <h2 className="text-2xl font-bold text-white">Round {currentRound.roundNo}</h2>
-                            <button 
-                                onClick={() => { if(confirm('Delete round? This cannot be undone.')) deleteRoundMutation.mutate(currentRound.roundNo) }}
-                                className="text-red-400 hover:text-red-300 flex items-center gap-2 text-sm"
-                            >
-                                <FiTrash2 /> Delete Round
-                            </button>
-                        </div>
-
-                        {/* Quiz Management */}
-                        <div className="bg-slate-900/30 p-6 rounded-xl border border-slate-800">
-                             <div className="flex justify-between items-end mb-4">
-                                <div>
-                                    <h3 className="text-lg font-bold text-white">Quiz</h3>
-                                    <p className="text-sm text-slate-400">Manage quiz for this round.</p>
-                                </div>
-                             </div>
-                             {currentRound.Quiz ? (
-                                <div className="flex justify-between items-center bg-slate-800/50 p-4 rounded-lg">
-                                     <div>
-                                        <p className="text-white font-bold">{currentRound.Quiz.name}</p>
-                                        <p className="text-xs text-slate-500">
-                                            {currentRound.Quiz.completed ? 'Completed' : 'Active'} • {currentRound.Quiz.allowAttempts ? 'Attempts Allowed' : 'No Attempts'}
-                                        </p>
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <button onClick={() => setIsQuizQROpen(true)} className="text-purple-400 hover:text-purple-300 text-sm">QR Code</button>
-                                        <button onClick={() => setIsQuizLeaderboardOpen(true)} className="text-green-400 hover:text-green-300 text-sm">Leaderboard</button>
-                                        <button onClick={() => setIsQuizEditorOpen(true)} className="text-blue-400 hover:text-blue-300 text-sm">Edit</button>
-                                        <button onClick={() => { if(confirm('Delete quiz?')) deleteQuizMutation.mutate(currentRound.Quiz!.id) }} className="text-red-400 hover:text-red-300 text-sm">Delete</button>
-                                    </div>
-                                </div>
-                             ) : (
-                                <button onClick={() => setIsQuizEditorOpen(true)} className="flex items-center gap-2 text-blue-400 hover:text-blue-300 text-sm">
-                                    <FiPlus /> Create Quiz
+                    {currentRound && (
+                        <div className="flex-1 space-y-6">
+                            {/* Round Header */}
+                            <div className="flex justify-between items-center border-b border-slate-800 pb-4">
+                                <h2 className="text-2xl font-bold text-white">Round {currentRound.roundNo}</h2>
+                                <button 
+                                    onClick={() => { if(confirm('Delete round? This cannot be undone.')) deleteRoundMutation.mutate(currentRound.roundNo) }}
+                                    className="text-red-400 hover:text-red-300 flex items-center gap-2 text-sm"
+                                >
+                                    <FiTrash2 /> Delete Round
                                 </button>
-                             )}
-                        </div>
+                            </div>
 
-                        {/* Judges Section */}
-                        <div className="bg-slate-900/30 p-6 rounded-xl border border-slate-800">
-                             <div className="flex justify-between items-end mb-4">
-                                <div>
-                                    <h3 className="text-lg font-bold text-white">Judges</h3>
-                                    <p className="text-sm text-slate-400">Judges assigned to this round.</p>
+                            {/* Quiz Management */}
+                            <div className="bg-slate-900/30 p-6 rounded-xl border border-slate-800">
+                                <div className="flex justify-between items-end mb-4">
+                                    <div>
+                                        <h3 className="text-lg font-bold text-white">Quiz</h3>
+                                        <p className="text-sm text-slate-400">Manage quiz for this round.</p>
+                                    </div>
                                 </div>
-                                <button onClick={() => setIsAddJudgeOpen(true)} className="text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1"><FiPlus /> Add Judge</button>
-                             </div>
+                                {currentRound.Quiz ? (
+                                    <div className="flex justify-between items-center bg-slate-800/50 p-4 rounded-lg">
+                                        <div>
+                                            <p className="text-white font-bold">{currentRound.Quiz.name}</p>
+                                            <p className="text-xs text-slate-500">
+                                                {currentRound.Quiz.completed ? 'Completed' : 'Active'} • {currentRound.Quiz.allowAttempts ? 'Attempts Allowed' : 'No Attempts'}
+                                            </p>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <button onClick={() => setIsQuizQROpen(true)} className="text-purple-400 hover:text-purple-300 text-sm">QR Code</button>
+                                            <button onClick={() => setIsQuizLeaderboardOpen(true)} className="text-green-400 hover:text-green-300 text-sm">Leaderboard</button>
+                                            <button onClick={() => setIsQuizEditorOpen(true)} className="text-blue-400 hover:text-blue-300 text-sm">Edit</button>
+                                            <button onClick={() => { if(confirm('Delete quiz?')) deleteQuizMutation.mutate(currentRound.Quiz!.id) }} className="text-red-400 hover:text-red-300 text-sm">Delete</button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <button onClick={() => setIsQuizEditorOpen(true)} className="flex items-center gap-2 text-blue-400 hover:text-blue-300 text-sm">
+                                        <FiPlus /> Create Quiz
+                                    </button>
+                                )}
+                            </div>
 
-                             <div className="space-y-2">
-                                 {currentRound.Judges?.map(judge => (
-                                     <div key={judge.userId} className="flex items-center justify-between bg-slate-800/50 p-3 rounded-lg">
-                                         <div>
-                                             <p className="text-white font-medium">{judge.User.name}</p>
-                                             <p className="text-xs text-slate-500">{judge.User.email}</p>
-                                         </div>
-                                         <button onClick={() => removeJudgeMutation.mutate(judge.userId)} className="text-slate-500 hover:text-red-400"><FiTrash2 /></button>
-                                     </div>
-                                 ))}
-                                 {(!currentRound.Judges || currentRound.Judges.length === 0) && <p className="text-slate-500 text-sm italic">No judges added.</p>}
-                             </div>
-
-                             {isAddJudgeOpen && (
-                                 <div className="mt-4 pt-4 border-t border-slate-800">
-                                     <h4 className="text-sm font-medium text-slate-300 mb-2">Search User</h4>
-                                     <input 
-                                          className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white text-sm"
-                                          placeholder="Search name/email..."
-                                          value={userSearchTerm}
-                                          onChange={e => handleSearchUsers(e.target.value)}
-                                     />
-                                     <div className="mt-2 max-h-40 overflow-y-auto space-y-1">
-                                         {searchResults.map(user => (
-                                             <div key={user.id} 
-                                                className="flex justify-between items-center p-2 hover:bg-slate-800 rounded cursor-pointer"
-                                                onClick={() => addJudgeMutation.mutate(user.id)}
-                                             >
-                                                 <div className="text-sm">
-                                                     <p className="text-white">{user.name}</p>
-                                                     <p className="text-xs text-slate-500">{user.email}</p>
-                                                 </div>
-                                                 <FiUserPlus className="text-blue-400" />
-                                             </div>
-                                         ))}
-                                     </div>
-                                      <button onClick={() => { setIsAddJudgeOpen(false); setUserSearchTerm(''); setSearchResults([]) }} className="mt-2 text-xs text-slate-500 underline">Cancel</button>
-                                 </div>
-                             )}
-                        </div>
-
-                        {/* Criteria Section */}
-                        <div className="bg-slate-900/30 p-6 rounded-xl border border-slate-800">
-                             <div className="flex justify-between items-end mb-4">
-                                <div>
-                                    <h3 className="text-lg font-bold text-white">Scoring Criteria</h3>
-                                    <p className="text-sm text-slate-400">Parameters for judging.</p>
+                            {/* Judges Section */}
+                            <div className="bg-slate-900/30 p-6 rounded-xl border border-slate-800">
+                                <div className="flex justify-between items-end mb-4">
+                                    <div>
+                                        <h3 className="text-lg font-bold text-white">Judges</h3>
+                                        <p className="text-sm text-slate-400">Judges assigned to this round.</p>
+                                    </div>
+                                    <button onClick={() => setIsAddJudgeOpen(true)} className="text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1"><FiPlus /> Add Judge</button>
                                 </div>
-                                <button onClick={() => setIsAddCriteriaOpen(true)} className="text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1"><FiPlus /> Add Criteria</button>
-                             </div>
 
-                             <div className="space-y-2">
-                                 {currentRound.Criteria?.map(crit => (
-                                     <div key={crit.id} className="flex items-center justify-between bg-slate-800/50 p-3 rounded-lg">
-                                         <div>
-                                             <p className="text-white font-medium">{crit.name}</p>
-                                             <p className="text-xs text-slate-500">{crit.type}</p>
-                                         </div>
-                                         <button onClick={() => deleteCriteriaMutation.mutate(crit.id)} className="text-slate-500 hover:text-red-400"><FiTrash2 /></button>
-                                     </div>
-                                 ))}
-                                 {(!currentRound.Criteria || currentRound.Criteria.length === 0) && <p className="text-slate-500 text-sm italic">No criteria added.</p>}
-                             </div>
+                                <div className="space-y-2">
+                                    {currentRound.Judges?.map(judge => (
+                                        <div key={judge.userId} className="flex items-center justify-between bg-slate-800/50 p-3 rounded-lg">
+                                            <div>
+                                                <p className="text-white font-medium">{judge.User.name}</p>
+                                                <p className="text-xs text-slate-500">{judge.User.email}</p>
+                                            </div>
+                                            <button onClick={() => removeJudgeMutation.mutate(judge.userId)} className="text-slate-500 hover:text-red-400"><FiTrash2 /></button>
+                                        </div>
+                                    ))}
+                                    {(!currentRound.Judges || currentRound.Judges.length === 0) && <p className="text-slate-500 text-sm italic">No judges added.</p>}
+                                </div>
 
-                             {isAddCriteriaOpen && (
-                                 <form onSubmit={handleAddCriteria} className="mt-4 pt-4 border-t border-slate-800 flex gap-2">
-                                     <input 
-                                          className="flex-1 bg-slate-950 border border-slate-700 rounded-lg p-2 text-white text-sm"
-                                          placeholder="Criteria Name"
-                                          value={newCriteriaName}
-                                          onChange={e => setNewCriteriaName(e.target.value)}
-                                          required
-                                     />
-                                     <select 
-                                        className="bg-slate-950 border border-slate-700 rounded-lg p-2 text-white text-sm"
-                                        value={newCriteriaType}
-                                        onChange={e => setNewCriteriaType(e.target.value)}
-                                     >
-                                         <option value="NUMBER">Number (Score)</option>
-                                         <option value="TIME">Time</option>
-                                         <option value="TEXT">Text</option>
-                                     </select>
-                                     <button type="submit" className="bg-blue-600 text-white rounded-lg px-4 py-2 text-sm font-semibold hover:bg-blue-500">Add</button>
-                                     <button type="button" onClick={() => setIsAddCriteriaOpen(false)} className="text-slate-500 px-2 hover:text-white">Cancel</button>
-                                 </form>
-                             )}
+                                {isAddJudgeOpen && (
+                                    <div className="mt-4 pt-4 border-t border-slate-800">
+                                        <h4 className="text-sm font-medium text-slate-300 mb-2">Search User</h4>
+                                        <input 
+                                            className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white text-sm"
+                                            placeholder="Search name/email..."
+                                            value={userSearchTerm}
+                                            onChange={e => handleSearchUsers(e.target.value)}
+                                        />
+                                        <div className="mt-2 max-h-40 overflow-y-auto space-y-1">
+                                            {searchResults.map(user => (
+                                                <div key={user.id} 
+                                                    className="flex justify-between items-center p-2 hover:bg-slate-800 rounded cursor-pointer"
+                                                    onClick={() => addJudgeMutation.mutate(user.id)}
+                                                >
+                                                    <div className="text-sm">
+                                                        <p className="text-white">{user.name}</p>
+                                                        <p className="text-xs text-slate-500">{user.email}</p>
+                                                    </div>
+                                                    <FiUserPlus className="text-blue-400" />
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <button onClick={() => { setIsAddJudgeOpen(false); setUserSearchTerm(''); setSearchResults([]) }} className="mt-2 text-xs text-slate-500 underline">Cancel</button>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Criteria Section */}
+                            <div className="bg-slate-900/30 p-6 rounded-xl border border-slate-800">
+                                <div className="flex justify-between items-end mb-4">
+                                    <div>
+                                        <h3 className="text-lg font-bold text-white">Scoring Criteria</h3>
+                                        <p className="text-sm text-slate-400">Parameters for judging.</p>
+                                    </div>
+                                    <button onClick={() => setIsAddCriteriaOpen(true)} className="text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1"><FiPlus /> Add Criteria</button>
+                                </div>
+
+                                <div className="space-y-2">
+                                    {currentRound.Criteria?.map(crit => (
+                                        <div key={crit.id} className="flex items-center justify-between bg-slate-800/50 p-3 rounded-lg">
+                                            <div>
+                                                <p className="text-white font-medium">{crit.name}</p>
+                                                <p className="text-xs text-slate-500">Max Score: {crit['scoreOutOf'] || 10}</p>
+                                            </div>
+                                            <button onClick={() => deleteCriteriaMutation.mutate(crit.id)} className="text-slate-500 hover:text-red-400"><FiTrash2 /></button>
+                                        </div>
+                                    ))}
+                                    {(!currentRound.Criteria || currentRound.Criteria.length === 0) && <p className="text-slate-500 text-sm italic">No criteria added.</p>}
+                                </div>
+
+                                {isAddCriteriaOpen && (
+                                    <form onSubmit={handleAddCriteria} className="mt-4 pt-4 border-t border-slate-800 flex gap-2">
+                                        <input 
+                                            className="flex-1 bg-slate-950 border border-slate-700 rounded-lg p-2 text-white text-sm"
+                                            placeholder="Criteria Name"
+                                            value={newCriteriaName}
+                                            onChange={e => setNewCriteriaName(e.target.value)}
+                                            required
+                                        />
+                                        <input 
+                                            type="number"
+                                            className="w-24 bg-slate-950 border border-slate-700 rounded-lg p-2 text-white text-sm"
+                                            placeholder="Max"
+                                            value={newCriteriaScoreOutOf}
+                                            onChange={e => setNewCriteriaScoreOutOf(Number(e.target.value))}
+                                            required
+                                            min={1}
+                                        />
+                                        <button type="submit" className="bg-blue-600 text-white rounded-lg px-4 py-2 text-sm font-semibold hover:bg-blue-500">Add</button>
+                                        <button type="button" onClick={() => setIsAddCriteriaOpen(false)} className="text-slate-500 px-2 hover:text-white">Cancel</button>
+                                    </form>
+                                )}
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             )}
         </div>

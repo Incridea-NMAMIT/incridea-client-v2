@@ -67,7 +67,7 @@ export interface Judge {
 export interface Criteria {
     id: number
     name: string
-    type: 'TEXT' | 'NUMBER' | 'TIME'
+    scoreOutOf?: number
 }
 
 export interface Round {
@@ -179,7 +179,7 @@ export const removeJudge = async (eventId: number, roundNo: number, judgeUserId:
 }
 
 // Criteria Management
-export const addCriteria = async (eventId: number, roundNo: number, payload: { name: string, type?: string }, token: string) => {
+export const addCriteria = async (eventId: number, roundNo: number, payload: { name: string; scoreOutOf?: number }, token: string) => {
     const { data } = await apiClient.post<{ criteria: Criteria }>(`/organiser/events/${eventId}/rounds/${roundNo}/criteria`, payload, {
         headers: { Authorization: `Bearer ${token}` }
     })

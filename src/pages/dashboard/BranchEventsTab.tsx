@@ -190,23 +190,25 @@ function BranchEventsTab({
                 </div>
               )}
 
-              <div className="relative mt-2 flex flex-col gap-2 rounded-lg border border-slate-800 bg-slate-950/40 p-3 sm:flex-row sm:items-center">
-                <input
-                  className="input sm:flex-1"
-                  placeholder="Search user by email or name"
-                  value={organiserSearchTerms[event.id] ?? ''}
-                  onChange={(ev) => {
-                    void handleOrganiserSearch(event.id, ev.target.value)
-                  }}
-                />
-                {organiserSearchLoading[event.id] ? (
-                  <p className="text-xs text-slate-400">Searching…</p>
-                ) : null}
+              {event.organisers.length < 2 && (
+                <div className="relative mt-2 flex flex-col gap-2 rounded-lg border border-slate-800 bg-slate-950/40 p-3 sm:flex-row sm:items-center">
+                  <input
+                    className="input sm:flex-1"
+                    placeholder="Search user by email or name"
+                    value={organiserSearchTerms[event.id] ?? ''}
+                    onChange={(ev) => {
+                      void handleOrganiserSearch(event.id, ev.target.value)
+                    }}
+                  />
+                  {organiserSearchLoading[event.id] ? (
+                    <p className="text-xs text-slate-400">Searching…</p>
+                  ) : null}
 
-                {organiserSearchResults[event.id]?.length ? renderOrganiserResults(event.id) : null}
+                  {organiserSearchResults[event.id]?.length ? renderOrganiserResults(event.id) : null}
 
-                {pendingOrganiser && pendingOrganiser.eventId === event.id ? renderPendingOrganiser() : null}
-              </div>
+                  {pendingOrganiser && pendingOrganiser.eventId === event.id ? renderPendingOrganiser() : null}
+                </div>
+              )}
             </div>
           </div>
         ))}

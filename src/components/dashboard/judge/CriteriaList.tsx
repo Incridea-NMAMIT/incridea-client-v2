@@ -16,7 +16,6 @@ export default function CriteriaList({ round }: Props) {
                      round.Criteria.map(criteria => (
                          <div key={criteria.id} className="p-3 rounded-lg bg-slate-800/50 border border-transparent">
                              <p className="text-white font-medium">{criteria.name}</p>
-                             <p className="text-xs text-slate-400 uppercase">{criteria.type}</p>
                          </div>
                      ))
                  ) : (

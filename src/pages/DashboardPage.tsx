@@ -41,6 +41,7 @@ import DocEventsTab from './dashboard/DocEventsTab'
 import DocAssignRepTab from './dashboard/DocAssignRepTab'
 import OrganiserTab from './dashboard/OrganiserTab'
 import JudgingTab from './dashboard/JudgingTab'
+import JuryTab from './dashboard/JuryTab'
 import {
   fetchDocumentationEvents,
   createDocumentationEvent,
@@ -59,6 +60,7 @@ const BRANCHREP_TABS = ['Branch Rep'] as const
 const DOCUMENTATION_TABS = ['Doc Access', 'Assign Branch Rep'] as const
 const ORGANISER_TABS = ['Organiser'] as const
 const JUDGING_TABS = ['Judging'] as const
+const JURY_TABS = ['Jury'] as const
 
 type TabKey =
   | (typeof ADMIN_TABS)[number]
@@ -66,6 +68,7 @@ type TabKey =
   | (typeof DOCUMENTATION_TABS)[number]
   | (typeof ORGANISER_TABS)[number]
   | (typeof JUDGING_TABS)[number]
+  | (typeof JURY_TABS)[number]
 
 const truthyStrings = new Set(['true', '1', 'yes', 'y', 'on'])
 
@@ -102,7 +105,7 @@ function DashboardPage() {
   const isAdmin = hasRole(roles, 'ADMIN')
   const { socket } = useSocket()
   
-  const [tabLoadState, setTabLoadState] = useState<Record<TabKey, boolean>>({
+  const [availableTabs, setAvailableTabs] = useState<Record<TabKey, boolean>>({
     Settings: true,
     Variables: false,
     Users: false,
@@ -110,8 +113,9 @@ function DashboardPage() {
     'Branch Rep': false,
     'Doc Access': false,
     'Assign Branch Rep': false,
-    'Organiser': false,
-    'Judging': false,
+    Organiser: false,
+    Judging: false,
+    Jury: false,
   })
 
   // Initialize activeTab safely
@@ -132,11 +136,45 @@ function DashboardPage() {
     return 'Settings'
   })
 
+
+
+  // Invalidate queries on tab change to ensure data freshness
   useEffect(() => {
-    if (eventId) {
-      setActiveTab('Organiser')
+    switch (activeTab) {
+        case 'Settings':
+            queryClient.invalidateQueries({ queryKey: ['admin-settings'] })
+            break
+        case 'Variables':
+             queryClient.invalidateQueries({ queryKey: ['admin-variables'] })
+             break
+        case 'Users':
+             queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+             queryClient.invalidateQueries({ queryKey: ['admin-access-users'] })
+             break
+        case 'Logs':
+             queryClient.invalidateQueries({ queryKey: ['web-logs'] })
+             break
+        case 'Branch Rep':
+             queryClient.invalidateQueries({ queryKey: ['branch-rep-events'] })
+             break
+        case 'Doc Access':
+             queryClient.invalidateQueries({ queryKey: ['documentation-events'] })
+             queryClient.invalidateQueries({ queryKey: ['branches'] })
+             break
+        case 'Assign Branch Rep':
+             queryClient.invalidateQueries({ queryKey: ['documentation-branches'] })
+             break
+        case 'Organiser':
+             queryClient.invalidateQueries({ queryKey: ['organiser-events'] })
+             break
+        case 'Judging':
+             queryClient.invalidateQueries({ queryKey: ['judge-rounds'] })
+             break
+        case 'Jury':
+             queryClient.invalidateQueries({ queryKey: ['jury-rounds'] })
+             break
     }
-  }, [eventId])
+  }, [activeTab, queryClient])
 
   const [variableDrafts, setVariableDrafts] = useState<Record<string, string>>({})
   const [editingKey, setEditingKey] = useState<string | null>(null)
@@ -169,11 +207,12 @@ function DashboardPage() {
 
   const handleTabChange = (tab: TabKey) => {
     setActiveTab(tab)
+    navigate('/dashboard')
   }
 
   useEffect(() => {
     localStorage.setItem('dashboard_active_tab', activeTab)
-    setTabLoadState((prev) => ({ ...prev, [activeTab]: true }))
+    setAvailableTabs((prev) => ({ ...prev, [activeTab]: true }))
   }, [activeTab])
 
   // ...
@@ -221,6 +260,7 @@ function DashboardPage() {
           ...(documentationFlag ? [...DOCUMENTATION_TABS] : []),
           ...(organiserFlag ? [...ORGANISER_TABS] : []),
           ...(judgeFlag ? [...JUDGING_TABS] : []),
+          ...(hasRole(fetchedRoles, 'JURY') ? [...JURY_TABS] : []),
         ]
         
         setActiveTab((prev) => (availableTabs.includes(prev) ? prev : availableTabs[0]))
@@ -262,37 +302,37 @@ function DashboardPage() {
   const settingsQuery = useQuery<SettingsResponse, Error, SettingsResponse, ['admin-settings']>({
     queryKey: ['admin-settings'],
     queryFn: () => fetchSettings(token ?? ''),
-    enabled: isAdmin && Boolean(token) && tabLoadState.Settings,
+    enabled: isAdmin && Boolean(token) && availableTabs.Settings,
   })
 
   const variablesQuery = useQuery<VariablesResponse, Error, VariablesResponse, ['admin-variables']>({
     queryKey: ['admin-variables'],
     queryFn: () => fetchVariables(token ?? ''),
-    enabled: isAdmin && Boolean(token) && tabLoadState.Variables,
+    enabled: isAdmin && Boolean(token) && availableTabs.Variables,
   })
 
   const adminUsersQuery = useQuery<AdminUsersResponse, Error, AdminUsersResponse, ['admin-users', string]>({
     queryKey: ['admin-users', userSearchTerm],
     queryFn: () => fetchAdminUsers(userSearchTerm, token ?? ''),
-    enabled: isAdmin && Boolean(token) && tabLoadState.Users,
+    enabled: isAdmin && Boolean(token) && availableTabs.Users,
   })
 
   const adminAccessUsersQuery = useQuery<AdminUsersResponse, Error, AdminUsersResponse, ['admin-access-users']>({
     queryKey: ['admin-access-users'],
     queryFn: () => fetchAdminUsers('', token ?? ''),
-    enabled: isAdmin && Boolean(token) && tabLoadState.Users,
+    enabled: isAdmin && Boolean(token) && availableTabs.Users,
   })
 
   const webLogsQuery = useQuery<WebLogsResponse, Error, WebLogsResponse, ['web-logs', number]>({
     queryKey: ['web-logs', logsPage],
     queryFn: () => fetchWebLogs(token ?? '', logsPage, 50),
-    enabled: isAdmin && Boolean(token) && tabLoadState.Logs,
+    enabled: isAdmin && Boolean(token) && availableTabs.Logs,
   })
 
   const branchEventsQuery = useQuery<BranchRepEventsResponse, Error, BranchRepEventsResponse, ['branch-rep-events']>({
     queryKey: ['branch-rep-events'],
     queryFn: () => fetchBranchRepEvents(token ?? ''),
-    enabled: isBranchRep && Boolean(token) && tabLoadState['Branch Rep'],
+    enabled: isBranchRep && Boolean(token) && availableTabs['Branch Rep'],
   })
 
   useEffect(() => {
@@ -414,7 +454,13 @@ function DashboardPage() {
     setOrganiserSearchLoading((prev) => ({ ...prev, [eventId]: true }))
     try {
       const { users } = await searchBranchRepUsers(term.trim(), token)
-      setOrganiserSearchResults((prev) => ({ ...prev, [eventId]: users }))
+      
+      // Filter out users who are already organisers for this event
+      const event = branchEventsQuery.data?.events?.find(e => e.id === eventId)
+      const existingOrganiserIds = new Set(event?.organisers.map(o => o.userId) || [])
+      const filteredUsers = users.filter(user => !existingOrganiserIds.has(user.id))
+
+      setOrganiserSearchResults((prev) => ({ ...prev, [eventId]: filteredUsers }))
     } catch (error) {
       console.error(error)
     } finally {
@@ -428,13 +474,13 @@ function DashboardPage() {
   const docEventsQuery = useQuery<{ events: DocumentationEvent[] }, Error, { events: DocumentationEvent[] }, ['documentation-events']>({
     queryKey: ['documentation-events'],
     queryFn: () => fetchDocumentationEvents(token ?? ''),
-    enabled: isDocumentation && Boolean(token) && tabLoadState['Doc Access'],
+    enabled: isDocumentation && Boolean(token) && availableTabs['Doc Access'],
   })
 
   const branchesQuery = useQuery<{ branches: Branch[] }, Error, { branches: Branch[] }, ['branches']>({
     queryKey: ['branches'],
     queryFn: () => fetchBranches(token ?? ''),
-    enabled: isDocumentation && Boolean(token) && tabLoadState['Doc Access'],
+    enabled: isDocumentation && Boolean(token) && availableTabs['Doc Access'],
   })
 
   const docEventDetailsQuery = useQuery<DocumentationEventDetails, Error, DocumentationEventDetails, ['doc-event', number | null]>({
@@ -444,7 +490,7 @@ function DashboardPage() {
       const { event } = await fetchDocumentationEventDetails(activeDocEventId, token)
       return event
     },
-    enabled: tabLoadState['Doc Access'] && Boolean(token && activeDocEventId && isDocumentation),
+    enabled: availableTabs['Doc Access'] && Boolean(token && activeDocEventId && isDocumentation),
   })
 
   useEffect(() => {
@@ -742,6 +788,40 @@ function DashboardPage() {
                 ))}
               </div>
             ) : null}
+
+            {isJudge ? (
+              <div className="flex flex-col gap-2">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Judge</p>
+                {JUDGING_TABS.map((tab) => (
+                  <button
+                    key={tab}
+                    type="button"
+                    onClick={() => handleTabChange(tab)}
+                    className={`w-full rounded-lg px-3 py-2 text-left text-sm font-semibold transition ${activeTab === tab ? 'bg-indigo-500/20 text-indigo-200' : 'hover:bg-slate-800 text-slate-200'
+                      }`}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+
+            {hasRole(roles, 'JURY') ? (
+              <div className="flex flex-col gap-2">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Jury</p>
+                {JURY_TABS.map((tab) => (
+                  <button
+                    key={tab}
+                    type="button"
+                    onClick={() => handleTabChange(tab)}
+                    className={`w-full rounded-lg px-3 py-2 text-left text-sm font-semibold transition ${activeTab === tab ? 'bg-amber-500/20 text-amber-200' : 'hover:bg-slate-800 text-slate-200'
+                      }`}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
+            ) : null}
           </div>
         </aside>
 
@@ -845,8 +925,13 @@ function DashboardPage() {
              <OrganiserTab token={token} activeEventId={eventId ? Number(eventId) : undefined} />
           ) : null}
 
+
           {activeTab === 'Judging' && isJudge ? (
             <JudgingTab />
+          ) : null}
+
+          {activeTab === 'Jury' && hasRole(roles, 'JURY') ? (
+            <JuryTab />
           ) : null}
 
         </main>

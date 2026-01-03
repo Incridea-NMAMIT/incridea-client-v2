@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type { Team, TeamMember } from '../../api/organiser'
 import { createTeam, deleteTeam, addTeamMember, removeTeamMember, searchUsers } from '../../api/organiser'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { showToast } from '../../utils/toast'
 import { FiTrash2, FiUserPlus, FiPlus } from 'react-icons/fi'
 
@@ -16,6 +16,11 @@ export default function TeamsTab({ eventId, teams, token }: TeamsTabProps) {
     const [isCreateTeamOpen, setIsCreateTeamOpen] = useState(false)
     const [newTeamName, setNewTeamName] = useState('')
     
+    // Invalidate query on mount to ensure freshness
+    useEffect(() => {
+        queryClient.invalidateQueries({ queryKey: ['organiser-event', String(eventId)] })
+    }, [eventId, queryClient])
+
     // Add member state
     const [addingMemberToTeamId, setAddingMemberToTeamId] = useState<number | null>(null)
     const [userSearchTerm, setUserSearchTerm] = useState('')

@@ -4,8 +4,8 @@ import { getJudgeRounds, getTeamsByRound } from '../../api/judging'
 import type { JudgeRound, Team, Winner } from '../../api/judging'
 import TeamList from '../../components/dashboard/judge/TeamList'
 import SelectedTeamList from '../../components/dashboard/judge/SelectedTeamList'
-import CriteriaList from '../../components/dashboard/judge/CriteriaList'
-import apiClient from '../../api/client'
+import JudgeLeaderboard from '../../components/dashboard/judge/JudgeLeaderboard'
+import CriteriaInputRow from '../../components/dashboard/judge/CriteriaInputRow'
 
 // Need to match V1 winner query, but for now assuming we can fetch winners or selected status.
 
@@ -15,12 +15,17 @@ export default function JudgingTab() {
         queryFn: getJudgeRounds
     })
 
+    const sortedRounds = roundsData?.rounds ? [...roundsData.rounds].sort((a, b) => {
+        if (a.eventId !== b.eventId) return a.Event.name.localeCompare(b.Event.name);
+        return a.roundNo - b.roundNo;
+    }) : [];
+
     const [selectedRound, setSelectedRound] = useState<JudgeRound | null>(null)
     useEffect(() => {
-        if (roundsData?.rounds?.length && !selectedRound) {
-            setSelectedRound(roundsData.rounds[0])
+        if (sortedRounds.length && !selectedRound) {
+            setSelectedRound(sortedRounds[0])
         }
-    }, [roundsData, selectedRound])
+    }, [sortedRounds, selectedRound])
 
     const { data: teamsData } = useQuery<{ teams: Team[] }>({
         queryKey: ['judge-teams', selectedRound?.eventId, selectedRound?.roundNo],
@@ -33,7 +38,7 @@ export default function JudgingTab() {
     // Or check `roundNo` vs total rounds?
     // `roundsData` has all rounds.
     const isFinalRound = selectedRound ? 
-        !roundsData?.rounds.some(r => r.eventId === selectedRound.eventId && r.roundNo > selectedRound.roundNo) 
+        !sortedRounds.some(r => r.eventId === selectedRound.eventId && r.roundNo > selectedRound.roundNo) 
         : false;
 
     // Selection Mode
@@ -45,13 +50,13 @@ export default function JudgingTab() {
 
     const [selectedTeam, setSelectedTeam] = useState<Team | null>(null)
     if (roundsLoading) return <div className="p-10 text-center text-slate-400">Loading rounds...</div>
-    if (!roundsData || roundsData.rounds.length === 0) return <div className="p-10 text-center text-slate-400">You are not assigned to any rounds.</div>
+    if (!sortedRounds || sortedRounds.length === 0) return <div className="p-10 text-center text-slate-400">You are not assigned to any rounds.</div>
 
     return (
         <div className="h-[calc(100vh-120px)] flex flex-col gap-4">
             {/* Header / Round Selector */}
             <div className="flex gap-4 overflow-x-auto pb-2 shrink-0 border-b border-slate-800">
-                {roundsData.rounds.map(round => (
+                {sortedRounds.map(round => (
                     <button 
                         key={`${round.eventId}-${round.roundNo}`}
                         onClick={() => { setSelectedRound(round); setSelectedTeam(null); setSelectionMode(false); }}
@@ -77,6 +82,7 @@ export default function JudgingTab() {
                             selectionMode={selectionMode}
                             setSelectionMode={setSelectionMode}
                             finalRound={isFinalRound}
+                            criteria={selectedRound.Criteria || []}
                         />
                     </div>
 
@@ -89,33 +95,14 @@ export default function JudgingTab() {
                                 
                                 <div className="space-y-4 overflow-y-auto flex-1">
                                     {selectedRound.Criteria?.map(crit => (
-                                         <div key={crit.id} className="space-y-1">
-                                             <label className="text-sm font-medium text-slate-300 flex justify-between">
-                                                 {crit.name}
-                                                 <span className="text-xs text-slate-500 uppercase">{crit.type}</span>
-                                             </label>
-                                             <input 
-                                                 type={crit.type === 'NUMBER' ? 'number' : 'text'}
-                                                 className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white placeholder:text-slate-600 focus:ring-2 focus:ring-indigo-500 outline-none"
-                                                 placeholder="Enter score"
-                                                 defaultValue={selectedTeam.Score?.find(s => s.criteriaId === crit.id)?.score || ''}
-                                                 onBlur={async (e) => {
-                                                     const val = e.target.value;
-                                                     if (!val) return; // Don't submit empty?
-                                                     try {
-                                                         await apiClient.post(`/judge/events/${selectedRound.eventId}/rounds/${selectedRound.roundNo}/score`, {
-                                                             teamId: selectedTeam.id,
-                                                             criteriaId: crit.id,
-                                                             score: val
-                                                         });
-                                                         // Ideally refetch or update local state
-                                                     } catch(err) {
-                                                         console.error(err);
-                                                         // toast error
-                                                     }
-                                                 }}
-                                             />
-                                         </div>
+                                         <CriteriaInputRow
+                                            key={crit.id}
+                                            criteria={crit}
+                                            teamId={selectedTeam.id}
+                                            eventId={selectedRound.eventId}
+                                            roundNo={selectedRound.roundNo}
+                                            initialScore={selectedTeam.Score?.find(s => s.criteriaId === crit.id)?.score}
+                                         />
                                     ))}
                                     {(!selectedRound.Criteria || selectedRound.Criteria.length === 0) && (
                                         <p className="text-slate-500 text-center italic">No criteria to judge.</p>
@@ -140,7 +127,11 @@ export default function JudgingTab() {
                                 finalRound={isFinalRound}
                             />
                         ) : (
-                            <CriteriaList round={selectedRound} />
+                            <JudgeLeaderboard 
+                                teams={teamsData?.teams || []} 
+                                round={selectedRound} 
+                                isFinalRound={isFinalRound}
+                            />
                         )}
                     </div>
                 </div>

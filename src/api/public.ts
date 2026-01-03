@@ -25,6 +25,7 @@ export type PublicEventType =
 export interface PublicEventRound {
   roundNo: number
   date: string | null
+  isCompleted: boolean
 }
 
 export interface PublicEvent {
@@ -37,6 +38,7 @@ export interface PublicEvent {
   maxTeams?: number | null
   minTeamSize: number
   maxTeamSize: number
+  isStarted: boolean
   eventType: PublicEventType
   category: PublicEventCategory
   rounds: PublicEventRound[]
