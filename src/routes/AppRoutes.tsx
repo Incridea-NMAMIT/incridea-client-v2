@@ -14,6 +14,7 @@ import PrivacyPage from '../pages/PrivacyPage.tsx'
 import RulesPage from '../pages/RulesPage.tsx'
 import QuizPage from '../pages/QuizPage.tsx'
 import RegisterPage from '../pages/RegisterPage.tsx'
+import Sidebar from '../components/Sidebar.tsx'
 
 const AuthRedirect = () => {
     const params = new URLSearchParams(window.location.search)
