@@ -1,8 +1,8 @@
 const RulesPage = () => {
   return (
     <div className="w-full">
-      <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-8 rounded-2xl bg-slate-900/70 p-6 text-slate-100 shadow-xl ring-1 ring-slate-800 md:p-10">
-        <div className="flex flex-col gap-4 text-center">
+      <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-8 rounded-2xl p-6 text-slate-100 shadow-xl ring-1 ring-slate-800 md:p-10">
+        <div className="flex flex-col gap-4 text-center p-20">
           <h1 className="text-4xl font-life-craft tracking-wider text-sky-200 md:text-6xl">Terms and Conditions</h1>
         </div>
 
@@ -391,7 +391,7 @@ const RulesPage = () => {
               {' '}incridea@nmamit.in
             </a>
           </p>
-          <p>Phone: +91 94488 46524 or +91 96863 56123</p>
+          <p>Phone: +91 88613 37830</p>
         </section>
       </div>
     </div>

@@ -1,26 +1,14 @@
-import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
+import { Link, Outlet } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-import { hasRole, normalizeRoles } from '../utils/roles'
-
-const navLinks = [
-  { label: 'Home', to: '/' },
-  { label: 'About', to: '/about' },
-  { label: 'Contact', to: '/contact' },
-  { label: 'Events', to: '/events' },
-  { label: 'Privacy', to: '/privacy' },
-  { label: 'Login/Register', to: '/login' },
-]
+import Navbar from './Navbar'
 
 import { logoutUser, fetchMe } from '../api/auth'
 
 function Layout() {
-  const [token, setToken] = useState<string | null>(null)
-  const [userName, setUserName] = useState<string | null>(null)
-  const [userRoles, setUserRoles] = useState<string[]>([])
-  const [isBranchRep, setIsBranchRep] = useState(false)
-  const [isOrganiser, setIsOrganiser] = useState(false)
+  const [token, setToken] = useState<string | null>(localStorage.getItem('userName') ? 'logged-in' : null)
+  const [userName, setUserName] = useState<string | null>(localStorage.getItem('userName'))
   const [isLoading, setIsLoading] = useState(true)
-  const location = useLocation()
+
 
   // Removed direct localStorage monitoring as we rely on server session
 
@@ -35,7 +23,6 @@ function Layout() {
     localStorage.removeItem('userId')
     setToken(null)
     setUserName(null)
-    setUserRoles([])
     window.location.href = `${import.meta.env.VITE_AUTH_URL}/`
   }
 
@@ -52,18 +39,12 @@ function Layout() {
               : null
           : null
 
-        const roles = user && typeof user === 'object' ? normalizeRoles((user as { roles?: unknown }).roles) : []
-        const branchRep = Boolean(user && (user as { isBranchRep?: unknown }).isBranchRep)
-        const organiser = Boolean(user && (user as { isOrganiser?: unknown }).isOrganiser)
-
         if (name) {
           setUserName(name)
           setToken('logged-in')
+          localStorage.setItem('userName', name)
         }
 
-        setUserRoles(roles)
-        setIsBranchRep(branchRep)
-        setIsOrganiser(organiser)
       } catch {
         // If auth fails, just clear local state but don't redirect
         localStorage.removeItem('token')
@@ -71,9 +52,6 @@ function Layout() {
         localStorage.removeItem('userId')
         setToken(null)
         setUserName(null)
-        setUserRoles([])
-        setIsBranchRep(false)
-        setIsOrganiser(false)
       } finally {
         setIsLoading(false)
       }
@@ -83,92 +61,45 @@ function Layout() {
   }, [])
 
   return (
-    <div className={`flex min-h-screen flex-col ${location.pathname.startsWith('/dashboard') ? '' : 'bg-slate-950'} text-slate-50`}>
-      <header className="border-b border-slate-800 bg-slate-900/80 backdrop-blur">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
-          <Link to="/" className="flex items-center gap-3 text-lg font-semibold text-sky-300 cursor-target">
-            <img
-              src="/incridea.png.png"
-              alt="Incridea"
-              className="h-12 w-auto rounded-xl object-contain"
-            />
-          </Link>
-          <nav className="flex items-center gap-3 text-sm font-medium text-slate-200">
-            {!isLoading && navLinks
-              .filter((link) => !(link.label === 'Login/Register' && token))
-              .map((link) => (
-                <NavLink
-                  key={link.to}
-                  to={link.to}
-                  className={({ isActive }) =>
-                    `rounded-md px-3 py-2 transition hover:bg-slate-800 hover:text-sky-200 cursor-target ${
-                      isActive ? 'bg-slate-800 text-sky-300' : ''
-                    }`
-                  }
-                >
-                  {link.label}
-                </NavLink>
-              ))}
-            {hasRole(userRoles, 'ADMIN') || hasRole(userRoles, 'DOCUMENTATION') || isBranchRep || isOrganiser ? (
-              <a
-                href={import.meta.env.VITE_DASHBOARD_URL}
-                className="rounded-md px-3 py-2 transition hover:bg-slate-800 hover:text-sky-200 cursor-target"
-              >
-                Dashboard
-              </a>
-            ) : null}
-            {token ? (
-              <div className="flex items-center gap-2 rounded-md bg-slate-800 px-3 py-2 text-xs text-slate-100">
-                <a
-                  href={`${import.meta.env.VITE_DASHBOARD_URL}/profile`}
-                  className="font-semibold hover:text-sky-200 cursor-target"
-                >
-                  {userName}
-                </a>
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  className="rounded bg-slate-700 px-2 py-1 text-[11px] font-semibold text-sky-200 hover:bg-slate-600 cursor-target"
-                >
-                  Logout
-                </button>
-              </div>
-            ) : null}
-          </nav>
-        </div>
-      </header>
+    <div className={`flex min-h-screen flex-col text-slate-50`}>
+      <Navbar
+        token={token}
+        userName={userName}
+        onLogout={handleLogout}
+        isLoading={isLoading}
+      />
 
-      <main className="w-screen flex justify-center items-center flex-1 px-4 py-10">
+      <main className="w-screen flex justify-center items-center flex-1 px-4 pt-32 pb-10">
         <Outlet />
       </main>
 
-      <footer className="border-t border-slate-800 bg-slate-900/70">
-        <div className="mx-auto flex max-w-5xl flex-col items-center gap-3 px-4 py-5 text-xs font-semibold text-slate-100 md:flex-row md:flex-wrap md:justify-center md:gap-4">
-          <Link className="transition-colors duration-200 hover:text-slate-200" to="/privacy">
+      <footer>
+        <div className="mx-auto flex max-w-5xl flex-col items-center gap-3 px-4 py-2 text-xs font-semibold text-slate-100 md:flex-row md:flex-wrap md:justify-center md:gap-4">
+          <Link className="transition-colors duration-200 hover:text-slate-200 cursor-target" to="/privacy">
             Privacy Policy
           </Link>
           <span className="hidden text-slate-600 md:inline">|</span>
-          <Link className="transition-colors duration-200 hover:text-slate-200" to="/rules">
+          <Link className="transition-colors duration-200 hover:text-slate-200 cursor-target" to="/rules">
             Terms & Conditions
           </Link>
           <span className="hidden text-slate-600 md:inline">|</span>
-          <Link className="transition-colors duration-200 hover:text-slate-200" to="/guidelines">
+          <Link className="transition-colors duration-200 hover:text-slate-200 cursor-target" to="/guidelines">
             Guidelines
           </Link>
           <span className="hidden text-slate-600 md:inline">|</span>
-          <Link className="transition-colors duration-200 hover:text-slate-200" to="/refund">
+          <Link className="transition-colors duration-200 hover:text-slate-200 cursor-target" to="/refund">
             Refund Policy
           </Link>
           <span className="hidden text-slate-600 md:inline">|</span>
-          <Link className="transition-colors duration-200 hover:text-slate-200" to="/contact">
+          <Link className="transition-colors duration-200 hover:text-slate-200 cursor-target" to="/contact">
             Contact Us
           </Link>
         </div>
         <div className="mx-auto flex max-w-5xl flex-col items-center gap-1 px-4 pb-5 text-[11px] font-semibold tracking-wide text-slate-200">
-          <Link className="inline-flex items-center gap-1 transition-all hover:tracking-wider hover:text-slate-100" to="/team">
+          <Link className="inline-flex items-center gap-1 transition-all hover:tracking-wider hover:text-slate-100 cursor-target" to="/team">
             Made with <span className="text-rose-400">❤</span> by Technical Team
           </Link>
-          <p>© Incridea {new Date().getFullYear()}</p>
+          <p className='cursor-target'>© Incridea {new Date().getFullYear()}</p>
         </div>
       </footer>
     </div>

@@ -1,4 +1,3 @@
-import React from 'react';
 import { MapPin, Calendar, Users } from 'lucide-react';
 
 interface EventCardProps {
@@ -29,14 +28,14 @@ const EventCard = ({
           }}
         >
           {/* Inner Content Area (Glass Effect) */}
-          <div className="flex h-full w-full flex-col gap-[8px] border border-white/25 bg-white/[0.11] p-[20px_16px_10px] backdrop-blur-[30px]">
+          <div className="flex h-full w-full flex-col gap-[8px] border border-white/25 bg-white/11 p-[20px_16px_10px] backdrop-blur-[30px]">
 
             {/* Shimmer Effect */}
             {/* Note: Requires the custom keyframe defined in styles below or tailwind config */}
-            <div className="pointer-events-none absolute inset-0 animate-shine bg-[linear-gradient(120deg,transparent_35%,rgba(255,255,255,0.09)_50%,transparent_65%)] bg-[length:280%_100%]" />
+            <div className="pointer-events-none absolute inset-0 animate-shine bg-[linear-gradient(120deg,transparent_35%,rgba(255,255,255,0.09)_50%,transparent_65%)] bg-size-[280%_100%]" />
 
             {/* Image Block (1080x1350 Ratio) */}
-            <div className="mb-[6px] w-full aspect-[1080/1350] rounded-[16px] overflow-hidden bg-black/30 border border-white/20">
+            <div className="mb-[6px] w-full aspect-1080/1350 rounded-[16px] overflow-hidden bg-black/30 border border-white/20">
               <img
                 src={imageUrl}
                 alt="Event"
@@ -53,19 +52,19 @@ const EventCard = ({
             {/* Details */}
             <div className="mt-auto space-y-2 pb-5 pl-1">
               {/* Date */}
-              <div className="flex h-[32px] w-[230px] items-center gap-[8px] rounded-full border border-white/[0.13] bg-white/[0.085] px-3 backdrop-blur-[6px] text-white pl-5">
+              <div className="flex h-[32px] w-[230px] items-center gap-[8px] rounded-full border border-white/13 bg-white/8.5 px-3 backdrop-blur-[6px] text-white pl-5">
                 <Calendar size={13} className="opacity-80" />
                 <span className="text-[11px] font-medium tracking-wide">5 Mar, 9.30 AM</span>
               </div>
 
               {/* Team */}
-              <div className="flex h-[32px] w-[230px] items-center gap-[8px] rounded-full border border-white/[0.13] bg-white/[0.085] px-3 backdrop-blur-[6px] text-white pl-5">
+              <div className="flex h-[32px] w-[230px] items-center gap-[8px] rounded-full border border-white/13 bg-white/8.5 px-3 backdrop-blur-[6px] text-white pl-5">
                 <Users size={13} className="opacity-80" />
                 <span className="text-[11px] font-medium tracking-wide">5 per team</span>
               </div>
 
               {/* Location */}
-              <div className="flex h-[32px] w-[130px] items-center gap-[8px] rounded-full border border-white/[0.13] bg-white/[0.085] px-3 backdrop-blur-[6px] text-white pl-5">
+              <div className="flex h-[32px] w-[130px] items-center gap-[8px] rounded-full border border-white/13 bg-white/8.5 px-3 backdrop-blur-[6px] text-white pl-5">
                 <MapPin size={13} className="opacity-80" />
                 <span className="text-[11px] font-medium tracking-wide">NITTE</span>
               </div>

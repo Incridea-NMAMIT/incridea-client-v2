@@ -1,8 +1,8 @@
 const PrivacyPage = () => {
   return (
     <div className="w-full">
-      <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-8 rounded-2xl bg-slate-900/70 p-6 text-slate-100 shadow-xl ring-1 ring-slate-800 md:p-10">
-        <div className="flex flex-col gap-4 text-center">
+      <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-8 py-20 rounded-2xl text-slate-100 shadow-xl ring-1 ring-slate-800 md:p-10">
+        <div className="flex flex-col gap-4 text-center p-20">
           <h1 className="text-4xl font-life-craft tracking-wider text-sky-200 md:text-6xl">
             Incridea 2026 Privacy Policy
           </h1>
@@ -186,8 +186,8 @@ const PrivacyPage = () => {
               incridea@nmamit.in
             </a>{' '}
             or{' '}
-            <a href="tel:9448815186" className="text-sky-300 underline underline-offset-2 hover:text-sky-200">
-              +91 94488 46524
+            <a href="tel:8861337830" className="text-sky-300 underline underline-offset-2 hover:text-sky-200">
+              +91 88613 37830
             </a>
             .
           </p>

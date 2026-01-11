@@ -9,12 +9,11 @@ import RefundPage from '../pages/RefundPage.tsx'
 import GuidelinesPage from '../pages/GuidelinesPage.tsx'
 import EventsPage from '../pages/EventsPage.tsx'
 import EventDetailPage from '../pages/EventDetailPage.tsx'
-import CommitteePage from '../pages/CommitteePage.tsx'
+
 import PrivacyPage from '../pages/PrivacyPage.tsx'
 import RulesPage from '../pages/RulesPage.tsx'
 import QuizPage from '../pages/QuizPage.tsx'
 import RegisterPage from '../pages/RegisterPage.tsx'
-import Sidebar from '../components/Sidebar.tsx'
 
 const AuthRedirect = () => {
     const params = new URLSearchParams(window.location.search)
@@ -51,7 +50,7 @@ function AppRoutes() {
         <Route path="/login" element={<AuthRedirect />} />
         <Route path="/reset-password" element={<ResetRedirect />} />
         <Route path="/quiz/:quizId" element={<QuizPage />} />
-        <Route path="/committee" element={<CommitteePage />} />
+
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/test" element={<TestPage />} />
       </Route>

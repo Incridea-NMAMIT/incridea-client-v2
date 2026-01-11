@@ -13,6 +13,10 @@
 			"path": "../../../incridea-server-v2"
 		},
 		{
+			"name": "incridea-operations",
+			"path": "../../../incridea-operations"
+		},
+		{
 			"name": "incridea-dashboard",
 			"path": "../../../incridea-dashboard"
 		},
