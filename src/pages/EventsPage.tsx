@@ -15,6 +15,8 @@ import {
 } from '../api/public'
 import { showToast } from '../utils/toast'
 import { formatDate } from '../utils/date'
+import EventPreviewCard from '../components/events/EventCard'
+import AnimatedGlassCard from '../components/events/AnimatedGlassCard'
 
 const CATEGORY_FILTERS: (PublicEventCategory | 'ALL')[] = [
   'ALL',
@@ -68,7 +70,7 @@ function toSlug(event: PublicEvent) {
   return `${base}-${event.id}`
 }
 
-function EventCard({ event }: { event: PublicEvent }) {
+function EventListCard({ event }: { event: PublicEvent }) {
   const firstRoundWithDate = event.rounds.find((round) => round.date)
   const slug = toSlug(event)
 
@@ -206,6 +208,7 @@ function EventsPage() {
 
   return (
     <section className="space-y-8">
+      
       <header className="space-y-2">
         <p className="muted uppercase text-xs">Discover</p>
         <h1 className="text-3xl font-bold text-slate-50">Events</h1>
@@ -213,7 +216,8 @@ function EventsPage() {
           Browse published events. Day filters come from the variable table so updates from admin will appear here automatically.
         </p>
       </header>
-
+      <EventPreviewCard/>
+    <AnimatedGlassCard/>
       <div className="card space-y-4 p-5">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div className="relative w-full lg:max-w-md">
@@ -279,7 +283,7 @@ function EventsPage() {
 
       <div className="grid gap-4 md:grid-cols-2">
         {filteredEvents.map((event) => (
-          <EventCard key={event.id} event={event} />
+          <EventListCard key={event.id} event={event} />
         ))}
       </div>
     </section>
