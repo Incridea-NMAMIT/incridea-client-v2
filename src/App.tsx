@@ -2,7 +2,9 @@ import { BrowserRouter } from 'react-router-dom'
 import AppRoutes from './routes/AppRoutes.tsx'
 
 import { SocketProvider } from './context/SocketContext'
-import TargetCursor from './components/TargetCursor'
+import Sidebar from './components/Sidebar.tsx'
+import Navbar from './components/Navbar.tsx'
+import TargetCursor from './components/TargetCursor.tsx'
 
 function App() {
   return (
@@ -13,6 +15,8 @@ function App() {
             hoverDuration={0.7}
         />
         <AppRoutes />
+        <Navbar/>
+        <Sidebar/>
       </SocketProvider>
     </BrowserRouter>
   )
