@@ -4,11 +4,27 @@ import type { PublicEvent } from "../../api/public";
 import { formatDate } from "../../utils/date";
 
 const CATEGORY_THEMES = {
-  TECHNICAL: { color: "#3b82f6", glow: "rgba(59, 130, 246, 0.8)" },
-  NON_TECHNICAL: { color: "#10b981", glow: "rgba(16, 185, 129, 0.8)" },
-  CORE: { color: "#a855f7", glow: "rgba(168, 85, 247, 0.8)" },
-  SPECIAL: { color: "#f43f5e", glow: "rgba(244, 63, 94, 0.8)" },
-  DEFAULT: { color: "#ffffff", glow: "rgba(255, 255, 255, 0.4)" },
+  TECHNICAL: {
+    color: "#60a5fa",
+    glow: "rgba(59, 130, 246, 0.5)",
+    label: "TECH",
+  },
+  NON_TECHNICAL: {
+    color: "#34d399",
+    glow: "rgba(16, 185, 129, 0.5)",
+    label: "NON-TECH",
+  },
+  CORE: { color: "#c084fc", glow: "rgba(168, 85, 247, 0.5)", label: "CORE" },
+  SPECIAL: {
+    color: "#fb7185",
+    glow: "rgba(244, 63, 94, 0.5)",
+    label: "SPECIAL",
+  },
+  DEFAULT: {
+    color: "#cbd5e1",
+    glow: "rgba(255, 255, 255, 0.2)",
+    label: "EVENT",
+  },
 };
 
 interface EventCardProps {
@@ -33,8 +49,9 @@ const EventCard = ({ event, index }: EventCardProps) => {
 
   return (
     <div
-      className={`flex items-center justify-center p-4 font-sans transition-all duration-500 hover:-translate-y-4 hover:z-50 ${index % 2 !== 0 ? "lg:mt-24" : "mt-0"
-        }`}
+      className={`flex items-center justify-center p-4 font-sans transition-all duration-500 hover:-translate-y-4 hover:z-50 ${
+        index % 2 !== 0 ? "lg:mt-24" : "mt-0"
+      }`}
     >
       <div className="relative w-[300px] aspect-[1452/2447.19] group">
         <div
@@ -49,7 +66,7 @@ const EventCard = ({ event, index }: EventCardProps) => {
           <div
             className="flex h-full w-full flex-col gap-[8px] border border-white/10 p-[20px_16px_10px] backdrop-blur-[20px] transition-all duration-500 group-hover:border-white/30"
             style={{
-              backgroundColor: "rgba(18, 20, 28, 0.4)",
+              backgroundColor: "rgba(18, 20, 28, 0.6)",
             }}
           >
             <div
@@ -62,39 +79,40 @@ const EventCard = ({ event, index }: EventCardProps) => {
 
             <div className="mb-[6px] w-full aspect-[1080/1350] rounded-[16px] overflow-hidden bg-black/40 border border-white/10">
               <img
-                src="https://www.shutterstock.com/image-vector/girl-holding-open-book-reading-600nw-1470580109.jpg"
+                src={
+                  event.image ||
+                  "https://www.shutterstock.com/image-vector/girl-holding-open-book-reading-600nw-1470580109.jpg"
+                }
                 alt={event.name}
-                className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500"
               />
             </div>
 
-            <div className="ml-1 mt-3 mb-1 text-[13px] font-bold uppercase tracking-[1.5px] text-white/90 truncate">
+            {/* Event Name - Reduced slightly for better fit */}
+            <div className="ml-1 mt-3 mb-1 text-[12px] font-bold uppercase tracking-[1.5px] text-white/90 truncate">
               {event.name}
             </div>
 
             <div className="mt-auto space-y-2 pb-5 pl-1 pr-1">
-              {/* Date Tag - Less Rounded */}
-              <div className="flex h-[32px] w-full items-center gap-[8px] rounded-md border border-white/10 bg-white/5 px-4 backdrop-blur-[4px] text-white">
-                <Calendar size={13} className="opacity-80 shrink-0" />
-                <span className="text-[11px] font-medium tracking-wide truncate">
+              <div className="flex h-[32px] w-full items-center gap-[8px] rounded-md border border-white/5 bg-white/5 px-4 backdrop-blur-[4px] text-white/80">
+                <Calendar size={12} className="opacity-70 shrink-0" />
+                <span className="text-[10.5px] font-medium tracking-wide truncate">
                   {firstRoundWithDate
                     ? formatDate(firstRoundWithDate.date)
                     : "TBD"}
                 </span>
               </div>
 
-              {/* Team Tag - Less Rounded */}
-              <div className="flex h-[32px] w-full items-center gap-[8px] rounded-md border border-white/10 bg-white/5 px-4 backdrop-blur-[4px] text-white">
-                <Users size={13} className="opacity-80 shrink-0" />
-                <span className="text-[11px] font-medium tracking-wide truncate">
+              <div className="flex h-[32px] w-full items-center gap-[8px] rounded-md border border-white/5 bg-white/5 px-4 backdrop-blur-[4px] text-white/80">
+                <Users size={12} className="opacity-70 shrink-0" />
+                <span className="text-[10.5px] font-medium tracking-wide truncate">
                   {teamSizeText}
                 </span>
               </div>
 
-              {/* Location Tag - Less Rounded */}
-              <div className="flex h-[32px] w-fit min-w-[100px] items-center gap-[8px] rounded-md border border-white/10 bg-white/5 px-4 backdrop-blur-[4px] text-white">
-                <MapPin size={13} className="opacity-80 shrink-0" />
-                <span className="text-[11px] font-medium tracking-wide truncate">
+              <div className="flex h-[32px] w-fit min-w-[100px] items-center gap-[8px] rounded-md border border-white/5 bg-white/5 px-4 backdrop-blur-[4px] text-white/80">
+                <MapPin size={12} className="opacity-70 shrink-0" />
+                <span className="text-[10.5px] font-medium tracking-wide truncate">
                   {event.venue || "NITTE"}
                 </span>
               </div>
@@ -102,18 +120,16 @@ const EventCard = ({ event, index }: EventCardProps) => {
           </div>
         </div>
 
+        {/* Dynamic Category Tag - 1/4th size reduction + Theme Colors */}
         <div
-          className="absolute bottom-[2%] right-[8%] text-[18px] tracking-[0.3em] font-bold select-none pointer-events-none z-20 transition-all duration-700 uppercase"
+          className="absolute bottom-[2.5%] right-[8%] text-[10px] tracking-[0.4em] font-black select-none pointer-events-none z-20 transition-all duration-700 uppercase"
           style={{
             color: theme.color,
-            opacity: 0.8,
+            textShadow: `0 0 10px ${theme.glow}`,
+            filter: `drop-shadow(0 0 2px ${theme.glow})`,
           }}
         >
-          {event.category === "NON_TECHNICAL"
-            ? "N-TECH"
-            : event.category === "TECHNICAL"
-              ? "TECH"
-              : event.category.split("_")[0]}
+          {theme.label}
         </div>
       </div>
 
