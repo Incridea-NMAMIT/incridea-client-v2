@@ -148,8 +148,8 @@ function ProfilePage() {
 
               {/* Profile Info & Buttons - Purple Glass Container */}
               <div className="flex-1 w-full md:pl-16">
-                <div className="rounded-2xl bg-purple-900/40 backdrop-blur-sm border border-purple-500/30 min-h-48 flex items-center justify-center py-8 md:py-6 pt-16 md:pt-6">
-                  <div className="space-y-3 md:space-y-4 w-full px-4 md:px-6">
+                <div className="rounded-2xl bg-purple-900/40 backdrop-blur-sm border border-purple-500/30 min-h-48 flex items-center justify-center p-2 md:p-1.5 pt-4 md:pt-1.5">
+                  <div className="space-y-3 md:space-y-4 w-full p-1 md:p-1.5">
                     {/* Email Address */}
                     <div className="text-center">
                       <p className="text-sm text-slate-300">
@@ -174,14 +174,14 @@ function ProfilePage() {
                     {/* Buttons */}
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
                       <button
-                        className="px-6 md:px-8 py-2 bg-teal-500 hover:bg-teal-600 text-white font-medium rounded-lg transition-colors duration-200 w-full sm:w-60"
+                        className="p-1.5 md:p-2 bg-teal-500 hover:bg-teal-600 text-white font-medium rounded-lg transition-colors duration-200 w-full sm:w-60"
                         type="button"
                         onClick={() => setShowChangePassword(true)}
                       >
                         Change password
                       </button>
                       <button
-                        className="px-6 md:px-8 py-2 bg-teal-500 hover:bg-teal-600 text-white font-medium rounded-lg transition-colors duration-200 w-full sm:w-60"
+                        className="p-1.5 md:p-2 bg-teal-500 hover:bg-teal-600 text-white font-medium rounded-lg transition-colors duration-200 w-full sm:w-60"
                         type="button"
                         onClick={() => {
                           localStorage.removeItem("token");
@@ -199,8 +199,14 @@ function ProfilePage() {
         </div>
 
         {showChangePassword && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 px-4 py-6 backdrop-blur">
-            <LiquidGlassCard className="!w-[25%] !max-w-[25%] flex-none space-y-4 p-6">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-1 md:p-1.5 backdrop-blur">
+            <LiquidGlassCard
+              className="
+                !w-[92%] sm:!w-[70%] md:!w-[45%] lg:!w-[25%]
+                !max-w-[92%] sm:!max-w-[70%] md:!max-w-[45%] lg:!max-w-[25%]
+                flex-none space-y-4 p-6
+              "
+            >
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="muted">Security</p>
@@ -221,14 +227,14 @@ function ProfilePage() {
                 <div className="space-y-3">
                   <p className="text-sm text-slate-400">Choose an option:</p>
                   <button
-                    className="w-full px-6 py-3 bg-teal-500 hover:bg-teal-600 text-white font-medium rounded-lg transition-colors duration-200"
+                    className="w-full p-2 md:p-3 bg-teal-500 hover:bg-teal-600 text-white font-medium rounded-lg transition-colors duration-200"
                     type="button"
                     onClick={() => setShowPasswordForm(true)}
                   >
                     Change Password
                   </button>
                   <button
-                    className="w-full px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors duration-200"
+                    className="w-full p-2 md:p-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors duration-200"
                     type="button"
                     onClick={() => {
                       handleResetRequest();
