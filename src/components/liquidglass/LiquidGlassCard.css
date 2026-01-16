@@ -20,6 +20,38 @@
   box-sizing: border-box;
 }
 
+/* Dark color scheme (default) */
+.card--dark {
+  background:
+    linear-gradient(to top, rgba(0, 0, 0, 0.35), transparent 60%),
+    rgba(21, 21, 21, 0.50);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+/* Orange color scheme */
+.card--orange {
+  background:
+    linear-gradient(to top, rgba(64, 23, 9, 0.4), transparent 60%),
+    rgba(92, 35, 10, 0.50);
+  border-color: rgba(251, 146, 60, 0.3);
+}
+
+.card--orange::after {
+  background: linear-gradient(135deg, rgba(124, 45, 18, 0.611), rgba(92, 35, 10, 0.342), transparent 60%);
+}
+
+/* Purple color scheme */
+.card--purple {
+  background:
+    linear-gradient(to top, rgba(88, 28, 135, 0.4), transparent 60%),
+    rgba(59, 13, 110, 0.50);
+  border-color: rgba(168, 85, 247, 0.3);
+}
+
+.card--purple::after {
+  background: linear-gradient(135deg, rgba(88, 28, 135, 0.611), rgba(59, 13, 110, 0.342), transparent 60%);
+}
+
 @media (min-width: 640px) {
   .card {
     padding: 1.25rem;
@@ -53,7 +85,7 @@
   inset: 0;
   z-index: 0;
   border-radius: inherit;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.04), transparent 60%);
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.611), rgba(0, 0, 0, 0.342), transparent 60%);
   pointer-events: none;
 }
 
