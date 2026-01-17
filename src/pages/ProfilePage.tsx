@@ -10,6 +10,7 @@ import {
   changePassword,
   fetchMe,
   requestPasswordReset,
+  logoutUser,
   type ChangePasswordPayload,
   type ChangePasswordResponse,
   type MeResponse,
@@ -125,6 +126,17 @@ function ProfilePage() {
     requestResetMutation.mutate({ email: userEmail });
   };
 
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+    } catch {
+      // Ignore logout API errors and proceed to client-side cleanup
+    } finally {
+      localStorage.removeItem("token");
+      window.location.href = "/";
+    }
+  };
+
   const handleCloseModal = () => {
     setShowChangePassword(false);
     setShowPasswordForm(false);
@@ -220,8 +232,7 @@ function ProfilePage() {
                           className="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-3xl transition-colors duration-200 w-full sm:w-auto sm:flex-1 sm:min-w-[10rem] sm:max-w-[15rem]"
                           type="button"
                           onClick={() => {
-                            localStorage.removeItem("token");
-                            navigate("/");
+                            void handleLogout();
                           }}
                         >
                           Logout
