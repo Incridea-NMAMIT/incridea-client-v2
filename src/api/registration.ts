@@ -79,11 +79,15 @@ export async function initiatePayment(registrationId: string) {
   return data
 }
 
-export async function verifyPayment(paymentDetails: {
-  razorpay_order_id: string
-  razorpay_payment_id: string
-  razorpay_signature: string
-}) {
-  const { data } = await apiClient.post<{ status: string; message: string }>('/payment/verify', paymentDetails)
-  return data
+
+export async function verifyPayment() {
+  try {
+     const { data } = await apiClient.get<{ status: string; pid?: string; receipt?: string }>('/payment/my-status')
+     if (data.status === 'success' && data.pid && data.receipt) {
+         return { status: 'success', message: 'Payment verified', pid: data.pid, receipt: data.receipt }
+     }
+  } catch (e) {
+    // Ignore error
+  }
+  return { status: 'pending', message: 'Payment verification pending' }
 }
