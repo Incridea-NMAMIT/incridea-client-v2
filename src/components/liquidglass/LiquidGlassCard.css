@@ -1,5 +1,5 @@
 .card {
-  width: 100%;
+  /* width: 100%; */
   max-width: 100%;
   display: block;
   padding: 0.75rem;
@@ -53,7 +53,7 @@
   background: linear-gradient(135deg, rgba(88, 28, 135, 0.611), rgba(58, 13, 110, 0.571), transparent 60%);
 }
 
-@media (min-width: 640px) {
+/* @media (min-width: 640px) {
   .card {
     padding: 1.25rem;
     border-radius: 1.5rem;
@@ -65,7 +65,7 @@
     padding: 2rem;
     border-radius: 1.75rem;
   }
-}
+} */
 
 .card::before {
   content: '';
@@ -93,7 +93,7 @@
 .card__content {
   position: relative;
   z-index: 1;
-  width: 100%;
-  max-width: 100%;
+  /* width: 100%;
+  max-width: 100%; */
   overflow: hidden;
 }
