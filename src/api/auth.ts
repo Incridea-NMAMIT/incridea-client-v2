@@ -10,12 +10,7 @@ export interface SignupPayload {
   collegeId?: number
   yearOfGraduation?: number
   idDocument?: string
-  accommodation?: {
-    gender: 'MALE' | 'FEMALE' | 'OTHER'
-    checkIn?: string
-    checkOut?: string
-    idProofUrl: string
-  }
+
 }
 
 export interface UserPayload {
@@ -102,7 +97,7 @@ export async function login(payload: LoginPayload): Promise<LoginResponse> {
 }
 
 export async function fetchMe(): Promise<MeResponse> {
-  const { data } = await apiClient.get<MeResponse>('/auth/me', { skipAuth: true } as any)
+  const { data } = await apiClient.get<MeResponse>('/auth/me')
   return data
 }
 
