@@ -13,7 +13,7 @@ const MovieCredits: React.FC<MovieCreditsProps> = ({ sections }) => {
     return (
         <div className="relative w-full py-2 px-2 sm:px-4">
             {/* Credits Container */}
-            <div className="w-full space-y-4 sm:space-y-6">
+            <div className="w-full space-y-12 sm:space-y-16">
                 {sections.map((section, sectionIndex) => (
                     <div key={sectionIndex}>
                         {/* Section Title */}
@@ -22,7 +22,7 @@ const MovieCredits: React.FC<MovieCreditsProps> = ({ sections }) => {
                         </h2>
 
                         {/* Names Grid - Responsive columns */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-0 gap-y-3 sm:gap-y-4 max-w-4xl mx-auto">
+                        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-0 gap-y-3 sm:gap-y-4 max-w-4xl mx-auto">
                             {section.members.map((name, nameIndex) => (
                                 <motion.div
                                     key={nameIndex}
