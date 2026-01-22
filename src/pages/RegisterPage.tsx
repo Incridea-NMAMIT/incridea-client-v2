@@ -3,10 +3,10 @@ import { useEffect, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { fetchRegistrationConfig, type RegistrationConfigResponse } from '../api/public'
-import { initiatePayment } from '../api/registration'
+import { initiatePayment, verifyPaymentSignature } from '../api/registration'
 import { fetchMe } from '../api/auth'
 import { showToast } from '../utils/toast'
-import { verifyPayment } from '../api/registration'
+// verifyPayment removed from here, used in Modal now
 import PaymentStatusModal from '../components/PaymentStatusModal'
 
 function RegisterPage() {
@@ -52,11 +52,11 @@ function RegisterPage() {
   
   const [modalState, setModalState] = useState<{
     isOpen: boolean
-    status: 'success' | 'failure' | 'loading'
+    status: 'SUCCESS' | 'FAILED' | 'PENDING'
     pid?: string | null
   }>({
     isOpen: false,
-    status: 'loading',
+    status: 'PENDING',
     pid: null,
   })
 
@@ -105,12 +105,6 @@ function RegisterPage() {
     // Simplification: Check user props.
     // If we can't fully determine, we might show a selection? But user data is already fixed.
     
-    const isNmamit = computedSelection === 'NMAMIT';
-    // const isAlumni = ... // How to detect?
-    // In `authController`: `yearOfGraduation: user.Alumni?.yearOfGraduation`.
-    // If `yearOfGraduation` is present, they are Alumni? 
-    // Or if `user.roles` or `user.category` says it.
-    
     // Strict logic from Auth Page:
     // Selection 'NMAMIT' -> collegeId 1.
     // Selection 'ALUMNI' -> collegeId 1.
@@ -120,7 +114,7 @@ function RegisterPage() {
     
     // Let's proceed with minimal logic and refine if needed.
     
-    if (isNmamit) {
+    if (computedSelection === 'NMAMIT') {
         // Check for Alumni?
         // Assuming for now standard NMAMIT logic if we don't have alumni flag.
         
@@ -207,61 +201,36 @@ function RegisterPage() {
                  color: '#460c78' 
              },
              handler: async function (response: any) {
-                setModalState({ isOpen: true, status: 'loading' })
+                setModalState({ 
+                  isOpen: true, 
+                  status: 'PENDING',
+                })
+
                 try {
-                  await verifyPayment({
-                    razorpay_order_id: response.razorpay_order_id,
-                    razorpay_payment_id: response.razorpay_payment_id,
-                    razorpay_signature: response.razorpay_signature,
-                  })
-                  const { data: updatedUser } = await refetchUser()
-                  if (updatedUser?.user?.pid) {
-                    setModalState({
-                      isOpen: true,
-                      status: 'success',
-                      pid: updatedUser.user.pid,
-                    })
-                  } else {
-                     setModalState({
-                      isOpen: true,
-                      status: 'failure',
-                      pid: null,
-                    })
-                  }
+                  await verifyPaymentSignature(response)
                 } catch (error) {
-                  console.error(error)
-                   setModalState({
-                      isOpen: true,
-                      status: 'failure',
-                      pid: null,
-                    })
+                  console.error('Payment verification request failed', error)
+                  setModalState({
+                    isOpen: true,
+                    status: 'FAILED',
+                    pid: null,
+                  })
                 }
               },
               modal: {
                 ondismiss: async function () {
+                   setModalState((prev) => ({ ...prev, isOpen: true, status: 'PENDING', pid: null }))
                    const { data: updatedUser } = await refetchUser()
                     if (updatedUser?.user?.pid) {
                       setModalState({
                         isOpen: true,
-                        status: 'success',
+                        status: 'SUCCESS',
                         pid: updatedUser.user.pid,
                       })
-                      // The useEffect will handle the redirect when modal needs to close?
-                      // Actually, if modal is open, we stay.
-                      // ondismiss is called when user closes the payment popup (NOT the success modal we built).
-                      // Wait, `modal` in options refers to Razorpay modal.
-                      // If user dismisses Razorpay modal, we might want to check status or just do nothing.
-                      // The code here was setting modalState (our modal).
-                      // If user closed Razorpay without paying, we might show failure or just nothing.
-                      // If they paid but something happened... 
-                      
-                      // existing logic: checks if PID exists (maybe webhook updated it?) and shows success.
-                      // otherwise shows failure.
-                      
                     } else {
                        setModalState({
                         isOpen: true,
-                        status: 'failure',
+                        status: 'FAILED',
                         pid: null,
                       })
                     }
@@ -279,6 +248,24 @@ function RegisterPage() {
          console.error(err)
          showToast(err.response?.data?.message || 'Error initiating payment', 'error')
      }
+  }
+
+  const handleVerificationResult = (result: { success: boolean; pid?: string }) => {
+    if (result.success && result.pid) {
+        setModalState({
+            isOpen: true,
+            status: 'SUCCESS',
+            pid: result.pid,
+        })
+        void refetchUser()
+    } else {
+        // Fallback or failed
+        setModalState({
+            isOpen: true,
+            status: 'FAILED',
+            pid: null,
+        })
+    }
   }
 
   if (isUserLoading || isConfigLoading) {
@@ -357,6 +344,7 @@ function RegisterPage() {
         onClose={() => setModalState({ ...modalState, isOpen: false })}
         status={modalState.status}
         pid={modalState.pid}
+        onVerificationResult={handleVerificationResult}
       />
     </section>
   )

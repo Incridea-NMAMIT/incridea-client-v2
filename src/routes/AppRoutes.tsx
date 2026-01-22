@@ -58,7 +58,6 @@ function AppRoutes() {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/accommodation" element={<AccommodationPage />} />
-        <Route path="/test" element={<TestPage />} />
       </Route>
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
