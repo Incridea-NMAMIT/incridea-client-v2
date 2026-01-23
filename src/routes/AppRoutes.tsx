@@ -2,7 +2,6 @@ import { Route, Routes } from "react-router-dom";
 import Layout from "../components/Layout.tsx";
 import HomePage from "../pages/HomePage.tsx";
 import NotFoundPage from "../pages/NotFoundPage.tsx";
-import TestPage from "../pages/TestPage.tsx";
 import ContactPage from "../pages/ContactPage.tsx";
 import AboutPage from "../pages/AboutPage.tsx";
 import RefundPage from "../pages/RefundPage.tsx";
@@ -14,7 +13,7 @@ import PrivacyPage from "../pages/PrivacyPage.tsx";
 import RulesPage from "../pages/RulesPage.tsx";
 import QuizPage from "../pages/QuizPage.tsx";
 import RegisterPage from "../pages/RegisterPage.tsx";
-import AccommodationPage from '../pages/AccommodationPage.tsx'
+import AccommodationPage from "../pages/AccommodationPage.tsx";
 
 const AuthRedirect = () => {
   const params = new URLSearchParams(window.location.search);
