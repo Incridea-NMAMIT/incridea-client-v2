@@ -30,9 +30,9 @@ function LoginPage() {
     ResetPasswordResponse,
     ResetPasswordRequestPayload
   > = (payload) =>
-    (requestPasswordReset as (
-      input: ResetPasswordRequestPayload,
-    ) => Promise<ResetPasswordResponse>)(payload)
+      (requestPasswordReset as (
+        input: ResetPasswordRequestPayload,
+      ) => Promise<ResetPasswordResponse>)(payload)
 
   const form = useForm<LoginPayload>({
     defaultValues: {
@@ -74,7 +74,8 @@ function LoginPage() {
 
       const userLabel = data.user.name ?? data.user.email ?? 'user'
       showToast(`Welcome back, ${userLabel}!`, 'success')
-      void navigate('/')
+      // Force reload to refresh application state
+      window.location.href = '/'
     },
   })
 

@@ -22,7 +22,7 @@ function Layout() {
     localStorage.removeItem('userName')
     localStorage.removeItem('userId')
     setToken(null)
-
+    window.location.reload()
   }
 
   const fetchProfile = async () => {

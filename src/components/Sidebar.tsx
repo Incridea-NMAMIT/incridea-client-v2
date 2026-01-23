@@ -10,6 +10,8 @@ import {
 import { NavLink } from "react-router-dom";
 
 const Sidebar = () => {
+  const token = localStorage.getItem("token");
+
   const items = [
     { icon: Home, path: "/", label: "Home" },
     { icon: Calendar, path: "/events", label: "Events" },
@@ -18,7 +20,7 @@ const Sidebar = () => {
     { icon: Phone, path: "/contact", label: "Contact" },
     { icon: User, path: "/profile", label: "Profile" },
     { icon: ShieldCheck, path: "/privacy", label: "Privacy" },
-  ];
+  ].filter(item => token || item.label !== "Profile");
 
   return (
     <div className="hidden lg:block fixed left-1/2 -translate-x-1/2 bottom-6 md:left-6 md:top-1/2 md:-translate-y-1/2 md:translate-x-0 md:bottom-auto md:mt-13 z-99999">

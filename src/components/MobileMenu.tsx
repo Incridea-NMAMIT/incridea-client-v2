@@ -21,7 +21,7 @@ const MobileMenu = ({ onLogout, isAuthenticated }: MobileMenuProps) => {
         { icon: Info, path: "/about", label: "About" },
         { icon: User, path: "/profile", label: "Profile" },
         { icon: Phone, path: "/contact", label: "Contact" },
-    ];
+    ].filter(link => isAuthenticated || link.label !== "Profile");
 
     // Animation Variants
     const drawerVariants: Variants = {
@@ -163,46 +163,78 @@ const MobileMenu = ({ onLogout, isAuthenticated }: MobileMenuProps) => {
                             <div className="w-full h-full bg-black/40 backdrop-blur-sm">
                                 <motion.div
                                     variants={contentVariants}
-                                    className="flex flex-col w-full h-full pt-4 pb-4 px-6 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none]"
+                                    className="flex flex-col w-full h-full pt-4 pb-24 px-6 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none]"
                                 >
                                     {/* Header: Back Arrow */}
-                                    <motion.div className="flex justify-start mb-4">
+                                    <motion.div className="flex justify-start mb-4 relative">
+                                        <svg width="0" height="0" className="absolute">
+                                            <linearGradient id="back-arrow-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                <stop offset="0%" stopColor="#67e8f9" /> {/* cyan-300 */}
+                                                <stop offset="50%" stopColor="#a855f7" /> {/* purple-500 */}
+                                                <stop offset="100%" stopColor="#67e8f9" /> {/* cyan-300 */}
+                                            </linearGradient>
+                                        </svg>
                                         <button
                                             onClick={toggleMenu}
-                                            className="p-2 -ml-2 text-white/80 hover:bg-white/10 rounded-full transition-colors"
+                                            className="p-2 pl-2 mt-2 hover:bg-white/10 rounded-full transition-colors"
                                         >
-                                            <ChevronLeft size={32} />
+                                            <ChevronLeft size={32} style={{ stroke: "url(#back-arrow-gradient)" }} />
                                         </button>
                                     </motion.div>
 
                                     {/* Title */}
-                                    <motion.h1 variants={itemVariants} className="text-3xl md:text-5xl font-extrabold text-white mb-6 md:mb-10 tracking-tight">Menu</motion.h1>
+                                    <motion.h1 variants={itemVariants} className="text-4xl md:text-5xl font-extrabold text-white mb-6 md:mb-10 pb-4 tracking-tight text-center w-full">Menu</motion.h1>
 
                                     {/* Main Navigation */}
-                                    <div className="flex flex-col gap-4 md:gap-10 w-full flex-grow pl-4 md:pl-16">
-                                        {links.map(({ icon: Icon, path, label }) => (
+                                    <div className="flex flex-col gap-4 md:gap-10 w-full flex-grow items-center">
+                                        {links.map(({ path, label }) => (
                                             <motion.div
                                                 key={path}
                                                 variants={itemVariants}
-                                                className="w-full"
+                                                className="w-full flex justify-center"
                                             >
                                                 <NavLink
                                                     to={path}
                                                     onClick={toggleMenu}
                                                     className={({ isActive }) =>
-                                                        `flex items-center gap-4 text-xl sm:text-2xl md:text-4xl font-medium transition-colors ${isActive ? "text-purple-300" : "text-white/80 hover:text-white"
+                                                        `flex items-center gap-4 text-2xl sm:text-3xl md:text-4xl font-medium transition-colors ${isActive ? "text-purple-300" : "text-white/80 hover:text-white"
                                                         }`
                                                     }
                                                 >
-                                                    <Icon className="w-6 h-6 md:w-8 md:h-8" strokeWidth={1.5} />
                                                     {label}
                                                 </NavLink>
                                             </motion.div>
                                         ))}
                                     </div>
 
-                                    {/* Footer Links (Privacy, Logout, etc) */}
-                                    <div className="flex flex-col gap-3 md:gap-6 mt-4 pt-4 border-t border-white/10 pl-4 md:pl-16">
+                                    {/* Auth Buttons (Moved above footer line) */}
+                                    <div className="flex flex-col items-center w-full mt-16 mb-4 pt-4">
+                                        {isAuthenticated ? (
+                                            <motion.button
+                                                variants={itemVariants}
+                                                onClick={() => {
+                                                    onLogout();
+                                                    toggleMenu();
+                                                }}
+                                                className="text-2xl sm:text-3xl md:text-4xl font-bold text-white flex items-center gap-3 hover:opacity-70 transition-opacity"
+                                            >
+                                                Logout
+                                            </motion.button>
+                                        ) : (
+                                            <motion.div variants={itemVariants}>
+                                                <NavLink
+                                                    to="/login"
+                                                    onClick={toggleMenu}
+                                                    className="text-2xl sm:text-3xl md:text-4xl font-bold text-white flex items-center gap-3 hover:opacity-70 transition-opacity"
+                                                >
+                                                    Sign In
+                                                </NavLink>
+                                            </motion.div>
+                                        )}
+                                    </div>
+
+                                    {/* Footer Links (Privacy, etc) */}
+                                    <div className="flex flex-col gap-3 md:gap-6 pt-4 items-center w-full">
                                         {[
                                             { path: "/privacy", label: "Privacy Policy" },
                                             { path: "/rules", label: "Terms & Conditions" },
@@ -219,31 +251,6 @@ const MobileMenu = ({ onLogout, isAuthenticated }: MobileMenuProps) => {
                                                 </NavLink>
                                             </motion.div>
                                         ))}
-
-
-
-                                        {isAuthenticated ? (
-                                            <motion.button
-                                                variants={itemVariants}
-                                                onClick={() => {
-                                                    onLogout();
-                                                    toggleMenu();
-                                                }}
-                                                className="text-xl md:text-2xl  font-bold text-white flex items-center gap-3 mt-4 hover:opacity-70 transition-opacity"
-                                            >
-                                                Logout
-                                            </motion.button>
-                                        ) : (
-                                            <motion.div variants={itemVariants}>
-                                                <NavLink
-                                                    to="/login"
-                                                    onClick={toggleMenu}
-                                                    className="text-xl md:text-2xl font-bold text-white flex items-center gap-3 mt-4 hover:opacity-70 transition-opacity"
-                                                >
-                                                    Sign In
-                                                </NavLink>
-                                            </motion.div>
-                                        )}
                                     </div>
                                 </motion.div>
                             </div>
