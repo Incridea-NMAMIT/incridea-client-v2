@@ -72,6 +72,7 @@ const Navbar = ({ token, onLogout, isLoading }: NavbarProps) => {
                 uppercase
                 transition-all duration-300
                 skew-x-[-10deg]
+                cursor-target
                 -mt-1
               "
             >
