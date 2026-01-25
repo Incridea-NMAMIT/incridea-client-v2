@@ -123,11 +123,11 @@ function ProfilePage() {
         {`@import url('https://fonts.googleapis.com/css2?family=New+Rocker&display=swap');`}
       </style>
       <div className="absolute inset-0 bg-black/40"></div>
-      <section className="relative h-screen overflow-y-auto pt-32 md:pt-24 pb-12 flex flex-col items-center justify-start">
+      <section className="relative h-screen overflow-y-auto pt-32 lg:pt-24 pb-12 flex flex-col items-center justify-start">
         {/* Profile Card */}
-        <div className="w-full max-w-[95%] sm:max-w-[90%] md:max-w-[85%] lg:max-w-[85%] mt-4 px-3 sm:px-4">
-          <div className="relative flex w-full gap-4 items-start flex-col md:flex-row">
-            <LiquidGlassCard className="p-4 md:p-6 rounded-3xl w-full md:flex-[0_0_33%]">
+        <div className="w-full max-w-[95%] sm:max-w-[90%] lg:max-w-[85%] mt-4 px-3 sm:px-4">
+          <div className="relative flex w-full gap-4 items-start flex-col lg:flex-row">
+            <LiquidGlassCard className="p-4 lg:p-6 rounded-3xl w-full lg:flex-[0_0_33%]">
               <div className="mt-4"></div>
               {/* Edit Profile Button */}
               <button
@@ -138,7 +138,7 @@ function ProfilePage() {
                 className="absolute top-4 right-4 z-20 p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-all duration-200 hover:scale-110 group"
                 title="Edit profile"
               >
-                <Pencil className="w-4 h-4 md:w-5 md:h-5 text-slate-200 group-hover:text-white" />
+                <Pencil className="w-4 h-4 lg:w-5 lg:h-5 text-slate-200 group-hover:text-white" />
                 <span className="absolute bottom-full right-0 mb-2 px-2 py-1 bg-slate-900/80 text-slate-100 text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
                   Edit profile
                 </span>
@@ -147,11 +147,11 @@ function ProfilePage() {
                 {/* Avatar with badge QR */}
                 <div className="relative flex items-center justify-center mt-3">
                   <div
-                    className={`w-32 h-32 md:w-44 md:h-44 rounded-full bg-gradient-to-br from-slate-400 to-slate-500 flex items-center justify-center shadow-xl transition-transform duration-500 ${
+                    className={`w-32 h-32 lg:w-44 lg:h-44 rounded-full bg-gradient-to-br from-slate-400 to-slate-500 flex items-center justify-center shadow-xl transition-transform duration-500 ${
                       isRotating ? "rotate-180" : "rotate-0"
                     }`}
                   >
-                    <span className="text-4xl md:text-6xl text-slate-800 font-semibold">
+                    <span className="text-4xl lg:text-6xl text-slate-800 font-semibold">
                       {userName.charAt(0).toUpperCase()}
                     </span>
                   </div>
@@ -163,16 +163,16 @@ function ProfilePage() {
                         setIsRotating(false);
                       }, 500);
                     }}
-                    className="absolute -bottom-2 -right-2 w-10 h-10 md:w-11 md:h-11 rounded-xl bg-white/10 border border-white/25 backdrop-blur-sm flex items-center justify-center hover:bg-white/20 transition-all duration-200 hover:scale-110 shadow-lg"
+                    className="absolute -bottom-2 -right-2 w-10 h-10 lg:w-11 lg:h-11 rounded-xl bg-white/10 border border-white/25 backdrop-blur-sm flex items-center justify-center hover:bg-white/20 transition-all duration-200 hover:scale-110 shadow-lg"
                     title="Show QR Code"
                   >
-                    <QrCode className="w-5 h-5 md:w-6 md:h-6 text-slate-200" />
+                    <QrCode className="w-5 h-5 lg:w-6 lg:h-6 text-slate-200" />
                   </button>
                 </div>
 
                 {/* Text */}
                 <div className="text-center space-y-2">
-                  <p className="text-2xl md:text-3xl font-semibold text-slate-50">
+                  <p className="text-2xl lg:text-3xl font-semibold text-slate-50">
                     {userName}
                   </p>
                   <p className="text-sm text-slate-300">{"No College Info"}</p>
@@ -204,8 +204,8 @@ function ProfilePage() {
             </LiquidGlassCard>
 
             {/* Missions Card on the right */}
-            <LiquidGlassCard className="p-4 md:p-5 rounded-3xl w-full md:flex-1 overflow-hidden">
-              <div className="grid gap-4 md:grid-rows-[auto_auto] overflow-hidden">
+            <LiquidGlassCard className="p-4 lg:p-5 rounded-3xl w-full lg:flex-1 overflow-hidden">
+              <div className="grid gap-4 lg:grid-rows-[auto_auto] overflow-hidden">
                 {/* Top Section: Enrolled Missions */}
                 <div className="flex flex-col overflow-hidden">
                   <div className="flex justify-center mb-4 mt-2 w-full">
