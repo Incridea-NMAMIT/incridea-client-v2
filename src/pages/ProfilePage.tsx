@@ -9,17 +9,15 @@ import { useNavigate } from "react-router-dom";
 import {
   changePassword,
   fetchMe,
-  requestPasswordReset,
   logoutUser,
   type ChangePasswordPayload,
   type ChangePasswordResponse,
   type MeResponse,
-  type ResetPasswordRequestPayload,
-  type ResetPasswordResponse,
 } from "../api/auth";
+import { fetchColleges, type College } from "../api/colleges";
 import { useForm } from "react-hook-form";
 import { showToast } from "../utils/toast";
-import { Pencil, QrCode, X } from "lucide-react";
+import { Pencil, QrCode, X, MapPin, Clock } from "lucide-react";
 import LiquidGlassCard from "../components/liquidglass/LiquidGlassCard";
 import InfiniteScroll from "../components/InfiniteScroll";
 
@@ -33,18 +31,7 @@ function ProfilePage() {
   const [showQRCode, setShowQRCode] = useState(false);
   const [isRotating, setIsRotating] = useState(false);
 
-  const toErrorMessage = (error: unknown, fallback: string) =>
-    error instanceof Error ? error.message : fallback;
 
-  const requestResetMutationFn: MutationFunction<
-    ResetPasswordResponse,
-    ResetPasswordRequestPayload
-  > = (payload) =>
-    (
-      requestPasswordReset as (
-        input: ResetPasswordRequestPayload,
-      ) => Promise<ResetPasswordResponse>
-    )(payload);
 
   useEffect(() => {
     if (!token) {
@@ -96,34 +83,26 @@ function ProfilePage() {
     },
   });
 
-  const requestResetMutation = useMutation<
-    ResetPasswordResponse,
-    unknown,
-    ResetPasswordRequestPayload
-  >({
-    mutationFn: requestResetMutationFn,
-    onSuccess: () => {
-      showToast("Password reset link sent to your email", "info");
-    },
-    onError: (error) => {
-      showToast(toErrorMessage(error, "Failed to send reset link."), "error");
-    },
-  });
 
   const onSubmit = form.handleSubmit((values) =>
     changePasswordMutation.mutate(values),
   );
 
+  /* 
+    We fetch all colleges to find the user's college name.
+    This is acceptable since the list of colleges is relatively small/static.
+  */
+  const collegeQuery = useQuery<College[]>({
+    queryKey: ["colleges"],
+    queryFn: fetchColleges,
+  });
+
   const user = profileQuery.data?.user;
   const userName = user?.name ?? user?.email ?? "User";
-  const userEmail: string = user?.email ?? "";
+  
+  const userCollegeId = user?.collegeId;
+  const collegeName = collegeQuery.data?.find(c => c.id === userCollegeId)?.name ?? "No College Info";
 
-  const handleResetRequest = () => {
-    if (!userEmail) {
-      return;
-    }
-    requestResetMutation.mutate({ email: userEmail });
-  };
 
   const handleLogout = async () => {
     try {
@@ -151,13 +130,13 @@ function ProfilePage() {
       <style>
         {`@import url('https://fonts.googleapis.com/css2?family=New+Rocker&display=swap');`}
       </style>
+      
       <div className="absolute inset-0 bg-black/40"></div>
       <section className="relative h-screen overflow-y-auto pt-32 md:pt-24 pb-12 flex flex-col items-center justify-start">
         {/* Profile Card */}
-        <div className="w-full max-w-[92%] sm:max-w-[80%] md:max-w-[72%] lg:max-w-[65%] mt-4 px-2 sm:px-4">
-          <div className="relative">
-            <LiquidGlassCard className="p-4 md:p-6 rounded-3xl">
-              <div className="mt-4"></div>
+        <div className="w-full max-w-[92%] sm:max-w-[80%] md:max-w-[85%] lg:max-w-[95%] xl:max-w-[85%] mt-4 px-2 sm:px-4">
+          <LiquidGlassCard className="p-4 md:p-6 rounded-3xl flex flex-col lg:flex-row gap-6 md:gap-8 items-stretch">
+          <div className="relative w-full md:w-64 lg:w-72 shrink-0 flex flex-col">
               {/* Edit Profile Button */}
               <button
                 onClick={() => {
@@ -172,11 +151,14 @@ function ProfilePage() {
                   Edit profile
                 </span>
               </button>
-              <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 lg:gap-0">
+              
+              <div className="w-full relative flex-1 flex flex-col items-center justify-center">
+                 <div className="mt-4"></div>
+                 <div className="flex flex-col items-center gap-4">
                 {/* Avatar Circle - Overlapping */}
-                <div className="flex-shrink-0 lg:-mr-20 z-10 md:mb-0 relative flex items-center justify-center ml-3 sm:ml-6 md:ml-8 lg:ml-10">
+                <div className="shrink-0 z-10 relative flex items-center justify-center">
                   <div
-                    className={`w-28 h-28 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-slate-400 to-slate-500 flex items-center justify-center shadow-xl transition-transform duration-500 ${
+                    className={`w-28 h-28 md:w-40 md:h-40 rounded-full bg-linear-to-br from-slate-400 to-slate-500 flex items-center justify-center shadow-xl transition-transform duration-500 ${
                       isRotating ? "rotate-180" : "rotate-0"
                     }`}
                   >
@@ -201,8 +183,8 @@ function ProfilePage() {
                 </div>
 
                 {/* Profile Info & Buttons - Purple Glass Container */}
-                <div className="flex-1 w-full max-w-full min-w-0 md:pl-8 lg:pl-16">
-                  <div className="rounded-2xl min-h-48 flex items-center justify-center p-4 md:p-6 w-full max-w-full">
+                <div className="w-full">
+                  <div className="rounded-2xl flex items-center justify-center p-2 w-full">
                     <div className="space-y-3 md:space-y-4 w-full max-w-full min-w-0">
                       {/* Name */}
                       <div className="text-center">
@@ -214,49 +196,51 @@ function ProfilePage() {
                       {/* Email Address : has to be fixed using hardcoded values for now*/}
                       <div className="text-center">
                         <p className="text-sm text-slate-300">
-                          {"No College Info"}
+                          {collegeName}
                         </p>
                       </div>
 
                       {/* Buttons */}
-                      <div className="flex flex-col sm:flex-row flex-wrap gap-3 justify-center items-stretch">
-                        <button
-                          className="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-3xl transition-colors duration-200 w-full sm:w-auto sm:flex-1 sm:min-w-[10rem] sm:max-w-[15rem]"
+                      <div className="flex flex-col gap-3 justify-center items-center w-full">
+                        <LiquidGlassCard
+                          as="button"
+                          className="px-6 py-2.5 text-white font-medium rounded-3xl transition-colors duration-200 w-full"
                           type="button"
                           onClick={() => {
                             setShowChangePassword(true);
                           }}
                         >
                           Change password
-                        </button>
-                        <button
-                          className="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-3xl transition-colors duration-200 w-full sm:w-auto sm:flex-1 sm:min-w-[10rem] sm:max-w-[15rem]"
+                        </LiquidGlassCard>
+                        <LiquidGlassCard
+                          as="button"
+                          className="px-6 py-2.5 text-white font-medium rounded-3xl transition-colors duration-200 w-full"
                           type="button"
                           onClick={() => {
                             void handleLogout();
                           }}
                         >
                           Logout
-                        </button>
+                        </LiquidGlassCard>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
               <div className="mt-6"></div>
-            </LiquidGlassCard>
+              </div>
+
           </div>
-        </div>
+
 
         {/* My Missions Section */}
-        {/* TODO: Replace hardcoded missions with mapped events once signup events API is available. */}
         {/* Cards count should equal number of events user has signed up for. */}
-        <div className="w-full max-w-[92%] sm:max-w-[80%] md:max-w-[72%] lg:max-w-[65%] mt-12">
-          <LiquidGlassCard className="p-6 md:p-8 rounded-3xl">
+        <div className="flex-1 w-full min-w-0">
+            <div className="w-full h-full flex flex-col">
             {/* Header */}
             <div className="flex justify-center mb-8 mt-4">
               <h2
-                className="text-3xl sm:text-4xl lg:text-5xl font-bold text-amber-400"
+                className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white"
                 style={{ fontFamily: "'New Rocker', cursive" }}
               >
                 My Missions
@@ -294,10 +278,10 @@ function ProfilePage() {
               ].map((mission) => (
                 <LiquidGlassCard
                   key={mission.code}
-                  className="!w-49 !max-w-49 !p-4.5 flex flex-col gap-2 !rounded-3xl"
+                  className="w-49! max-w-49! p-4.5! flex flex-col gap-2 rounded-3xl!"
                 >
                   {/* Mission Image/Poster */}
-                  <div className="relative aspect-[4/5] w-full bg-linear-to-b from-white/20 to-black/40 rounded-3xl overflow-hidden">
+                  <div className="relative aspect-4/5 w-full bg-linear-to-b from-white/20 to-black/40 rounded-3xl overflow-hidden">
                     {mission.image ? (
                       <img
                         src={mission.image}
@@ -315,48 +299,49 @@ function ProfilePage() {
                   </div>
 
                   {/* Mission Card Content */}
-                  <div className="flex-1 flex flex-col space-y-1.5 overflow-hidden">
+                  {/* Mission Card Content */}
+                  <div className="flex-1 flex flex-col justify-between overflow-hidden pt-2 gap-2">
                     {/* Event Title */}
                     <div>
-                      <h3 className="text-xs font-semibold text-slate-50 line-clamp-1">
+                      <h3 className="text-sm font-bold text-slate-50 line-clamp-2 leading-tight min-h-[2.5em]">
                         {mission.title}
                       </h3>
                     </div>
 
-                    {/* Venue Field */}
-                    <div className="flex items-center justify-between bg-slate-900/40 rounded px-1.5 py-1">
-                      <span className="text-xs text-teal-400">VENUE:</span>
-                      <span className="text-xs font-semibold text-amber-300">
-                        TBA
-                      </span>
-                    </div>
-
-                    {/* Time Field */}
-                    <div className="flex items-center justify-between bg-slate-900/40 rounded px-1.5 py-1">
-                      <span className="text-xs text-pink-400">TIME:</span>
-                      <span className="text-xs font-semibold text-amber-300">
-                        TBA
-                      </span>
+                    {/* Metadata: Venue & Time */}
+                    <div className="flex items-center gap-3 text-xs text-slate-300">
+                        {/* Venue */}
+                        <div className="flex items-center gap-1 min-w-0 shrink-0">
+                            <MapPin className="w-3.5 h-3.5 text-sky-400 shrink-0" />
+                            <span className="truncate font-medium">TBA</span>
+                        </div>
+                        {/* Time */}
+                        <div className="flex items-center gap-1 min-w-0 shrink-0">
+                            <Clock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                             <span className="truncate font-medium">TBA</span>
+                        </div>
                     </div>
                   </div>
                 </LiquidGlassCard>
               ))}
               speed="normal"
               gap="gap-6"
-              itemWidth="w-49"
+              itemWidth="w-48"
               pauseOnHover={true}
               autoScroll={false}
             />
             <div className="mt-6"></div>
-          </LiquidGlassCard>
+            </div>
+        </div>
+          </LiquidGlassCard> 
         </div>
 
         {showQRCode && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-1 md:p-1.5 backdrop-blur">
             <LiquidGlassCard
               className="
-                !w-[92%] sm:!w-[70%] md:!w-[45%] lg:!w-[25%]
-                !max-w-[92%] sm:!max-w-[70%] md:!max-w-[45%] lg:!max-w-[25%]
+                w-[92%]! sm:w-[70%]! md:w-[45%]! lg:w-[25%]!
+                max-w-[92%]! sm:max-w-[70%]! md:max-w-[45%]! lg:max-w-[25%]!
                 flex-none space-y-7 md:space-y-8 px-9 md:px-10 py-8 md:py-9 rounded-3xl
               "
             >
@@ -395,8 +380,8 @@ function ProfilePage() {
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-1 md:p-1.5 backdrop-blur">
             <LiquidGlassCard
               className="
-                !w-[92%] sm:!w-[70%] md:!w-[45%] lg:!w-[25%]
-                !max-w-[92%] sm:!max-w-[70%] md:!max-w-[45%] lg:!max-w-[25%]
+                w-[92%]! sm:w-[70%]! md:w-[45%]! lg:w-[25%]!
+                max-w-[92%]! sm:max-w-[70%]! md:max-w-[45%]! lg:max-w-[25%]!
                 flex-none space-y-6 px-8 md:px-9 py-7 md:py-8 rounded-3xl
               "
             >
@@ -421,7 +406,7 @@ function ProfilePage() {
                   <input
                     id="fullName"
                     type="text"
-                    className="w-full !px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all"
+                    className="w-full px-4! py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all"
                     value={editFullName}
                     onChange={(e) => setEditFullName(e.target.value)}
                     placeholder="Enter your full name"
@@ -429,7 +414,7 @@ function ProfilePage() {
                 </div>
                 <div className="flex justify-center items-center gap-4 pb-3">
                   <button
-                    className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-3xl transition-colors duration-200 min-w-[8.5rem]"
+                    className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-3xl transition-colors duration-200 min-w-34"
                     type="button"
                     onClick={() => {
                       if (editFullName.trim()) {
@@ -443,7 +428,7 @@ function ProfilePage() {
                     Save
                   </button>
                   <button
-                    className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-3xl transition-colors duration-200 min-w-[8.5rem]"
+                    className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-3xl transition-colors duration-200 min-w-34"
                     type="button"
                     onClick={handleCloseModal}
                   >
@@ -459,8 +444,8 @@ function ProfilePage() {
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-1 md:p-1.5 backdrop-blur">
             <LiquidGlassCard
               className="
-                !w-[92%] sm:!w-[70%] md:!w-[45%] lg:!w-[25%]
-                !max-w-[92%] sm:!max-w-[70%] md:!max-w-[45%] lg:!max-w-[25%]
+                w-[92%]! sm:w-[70%]! md:w-[45%]! lg:w-[25%]!
+                max-w-[92%]! sm:max-w-[70%]! md:max-w-[45%]! lg:max-w-[25%]!
                 flex-none space-y-6 px-8 md:px-9 py-7 md:py-8 rounded-3xl
               "
             >
@@ -521,7 +506,7 @@ function ProfilePage() {
                 </div>
                 <div className="flex items-center justify-center gap-4 pb-3">
                   <button
-                    className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-3xl transition-colors duration-200 min-w-[8.5rem]"
+                    className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-3xl transition-colors duration-200 min-w-34"
                     type="submit"
                     disabled={changePasswordMutation.isPending}
                   >
@@ -530,7 +515,7 @@ function ProfilePage() {
                       : "Update password"}
                   </button>
                   <button
-                    className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-3xl transition-colors duration-200 min-w-[8.5rem]"
+                    className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-3xl transition-colors duration-200 min-w-34"
                     type="button"
                     onClick={handleCloseModal}
                     disabled={changePasswordMutation.isPending}
