@@ -155,8 +155,8 @@ const InfiniteScroll: React.FC<InfiniteScrollProps> = ({
             <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 text-slate-200 group-hover:text-white" />
           </button>
 
-          {/* Clipped Viewport Container - Shows 3.75 cards only */}
-          <div className="relative w-full max-w-[806px] overflow-hidden">
+          {/* Clipped Viewport Container - Responsive flex-based */}
+          <div className="relative w-full max-w-[320px] sm:max-w-[520px] md:max-w-[720px] lg:max-w-[900px] overflow-hidden">
             {/* Scrollable Track */}
             <div
               ref={scrollRef}

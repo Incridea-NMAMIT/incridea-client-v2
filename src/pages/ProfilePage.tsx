@@ -204,10 +204,10 @@ function ProfilePage() {
             </LiquidGlassCard>
 
             {/* Missions Card on the right */}
-            <LiquidGlassCard className="p-4 md:p-5 rounded-3xl w-full md:flex-[0_0_35%]\">
-              <div className="grid gap-4 md:grid-rows-[auto_auto]">
+            <LiquidGlassCard className="p-4 md:p-5 rounded-3xl w-full md:flex-1 overflow-hidden">
+              <div className="grid gap-4 md:grid-rows-[auto_auto] overflow-hidden">
                 {/* Top Section: Enrolled Missions */}
-                <div className="flex flex-col">
+                <div className="flex flex-col overflow-hidden">
                   <div className="flex justify-center mb-4 mt-2 w-full">
                     <h2
                       className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white text-center w-full"
@@ -299,7 +299,7 @@ function ProfilePage() {
                 <div className="border-t border-white/10 my-3"></div>
 
                 {/* Bottom Section: Recommended Missions */}
-                <div className="flex flex-col">
+                <div className="flex flex-col overflow-hidden">
                   <div className="flex justify-center mb-4 mt-2 w-full">
                     <h2
                       className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white text-center w-full"
