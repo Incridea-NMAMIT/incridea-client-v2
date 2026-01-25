@@ -13,8 +13,29 @@ const ComingSoon = () => {
       setMousePos({ x, y });
     };
 
+    const handleOrientation = (e: DeviceOrientationEvent) => {
+      if (e.beta === null || e.gamma === null) return;
+
+      // Gamma: Left/Right tilt [-90, 90]
+      // Map -25 to 25 degrees to 0-1 for X axis
+      const gamma = Math.max(-25, Math.min(25, e.gamma));
+      const x = (gamma + 25) / 50;
+
+      // Beta: Front/Back tilt [-180, 180]
+      // Map 20 to 70 degrees to 0-1 for Y axis (holding phone at ~45 deg)
+      const beta = Math.max(20, Math.min(70, e.beta));
+      const y = (beta - 20) / 50;
+
+      setMousePos({ x, y });
+    };
+
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    window.addEventListener('deviceorientation', handleOrientation);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('deviceorientation', handleOrientation);
+    };
   }, []);
 
   // Calculate light direction for shadows
