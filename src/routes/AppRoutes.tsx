@@ -16,6 +16,7 @@ import AccommodationPage from "../pages/AccommodationPage.tsx";
 import TechTeamPage from "../pages/techteam.tsx";
 import CoreTeamPage from "../pages/coreteam.tsx";
 import NotFoundPage from "../pages/NotFoundPage";
+import ComingSoon from "../pages/ComingSoon.tsx";
 import RefundPolicy from '../pages/refundpolicy.tsx'
 
 const AuthRedirect = () => {
@@ -61,8 +62,9 @@ function AppRoutes() {
         <Route path="/techteam" element={<TechTeamPage />} />
         <Route path="/coreteam" element={<CoreTeamPage />} />
         <Route path="/refund-policy" element={<RefundPolicy />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
-      <Route path="*" element={<NotFoundPage />} />
+      <Route path="/comingsoon" element={<ComingSoon />} />
     </Routes>
   );
 }
