@@ -135,7 +135,7 @@ function ProfilePage() {
                   setEditFullName(userName);
                   setShowEditProfile(true);
                 }}
-                className="absolute top-4 right-4 z-20 p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-all duration-200 hover:scale-110 group"
+                className="cursor-target absolute top-4 right-4 z-20 p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-all duration-200 hover:scale-110 group"
                 title="Edit profile"
               >
                 <Pencil className="w-4 h-4 lg:w-5 lg:h-5 text-slate-200 group-hover:text-white" />
@@ -147,9 +147,8 @@ function ProfilePage() {
                 {/* Avatar with badge QR */}
                 <div className="relative flex items-center justify-center mt-3">
                   <div
-                    className={`w-32 h-32 lg:w-44 lg:h-44 rounded-full bg-gradient-to-br from-slate-400 to-slate-500 flex items-center justify-center shadow-xl transition-transform duration-500 ${
-                      isRotating ? "rotate-180" : "rotate-0"
-                    }`}
+                    className={`w-32 h-32 lg:w-44 lg:h-44 rounded-full bg-gradient-to-br from-slate-400 to-slate-500 flex items-center justify-center shadow-xl transition-transform duration-500 ${isRotating ? "rotate-180" : "rotate-0"
+                      }`}
                   >
                     <span className="text-4xl lg:text-6xl text-slate-800 font-semibold">
                       {userName.charAt(0).toUpperCase()}
@@ -163,7 +162,7 @@ function ProfilePage() {
                         setIsRotating(false);
                       }, 500);
                     }}
-                    className="absolute -bottom-2 -right-2 w-10 h-10 lg:w-11 lg:h-11 rounded-xl bg-white/10 border border-white/25 backdrop-blur-sm flex items-center justify-center hover:bg-white/20 transition-all duration-200 hover:scale-110 shadow-lg"
+                    className="cursor-target absolute -bottom-2 -right-2 w-10 h-10 lg:w-11 lg:h-11 rounded-xl bg-white/10 border border-white/25 backdrop-blur-sm flex items-center justify-center hover:bg-white/20 transition-all duration-200 hover:scale-110 shadow-lg"
                     title="Show QR Code"
                   >
                     <QrCode className="w-5 h-5 lg:w-6 lg:h-6 text-slate-200" />
@@ -181,7 +180,7 @@ function ProfilePage() {
                 {/* Buttons */}
                 <div className="flex flex-col gap-4 justify-center items-center w-full">
                   <button
-                    className="px-6 py-2 card card--dark text-white font-medium rounded-3xl transition-all duration-200 w-full max-w-xs hover:opacity-80 active:opacity-60"
+                    className="cursor-target px-6 py-2 card card--dark text-white font-medium rounded-3xl transition-all duration-200 w-full max-w-xs hover:opacity-80 active:opacity-60"
                     type="button"
                     onClick={() => {
                       setShowChangePassword(true);
@@ -190,7 +189,7 @@ function ProfilePage() {
                     Change password
                   </button>
                   <button
-                    className="px-6 py-2 card card--dark text-white font-medium rounded-3xl transition-all duration-200 w-full max-w-xs hover:opacity-80 active:opacity-60"
+                    className="cursor-target px-6 py-2 card card--dark text-white font-medium rounded-3xl transition-all duration-200 w-full max-w-xs hover:opacity-80 active:opacity-60"
                     type="button"
                     onClick={() => {
                       void handleLogout();
@@ -399,7 +398,7 @@ function ProfilePage() {
                 </div>
                 <button
                   type="button"
-                  className="text-slate-300 hover:text-sky-300 p-1 hover:bg-white/10 rounded transition-colors"
+                  className="cursor-target text-slate-300 hover:text-sky-300 p-1 hover:bg-white/10 rounded transition-colors"
                   onClick={() => setShowQRCode(false)}
                   aria-label="Close"
                 >
@@ -439,7 +438,7 @@ function ProfilePage() {
                 </div>
                 <button
                   type="button"
-                  className="text-slate-300 hover:text-sky-300 p-1 hover:bg-white/10 rounded transition-colors"
+                  className="cursor-target text-slate-300 hover:text-sky-300 p-1 hover:bg-white/10 rounded transition-colors"
                   onClick={handleCloseModal}
                   aria-label="Close"
                 >
@@ -460,7 +459,7 @@ function ProfilePage() {
                 </div>
                 <div className="flex justify-center items-center gap-4 pb-3">
                   <button
-                    className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-3xl transition-colors duration-200 min-w-[8.5rem]"
+                    className="cursor-target px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-3xl transition-colors duration-200 min-w-[8.5rem]"
                     type="button"
                     onClick={() => {
                       if (editFullName.trim()) {
@@ -474,7 +473,7 @@ function ProfilePage() {
                     Save
                   </button>
                   <button
-                    className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-3xl transition-colors duration-200 min-w-[8.5rem]"
+                    className="cursor-target px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-3xl transition-colors duration-200 min-w-[8.5rem]"
                     type="button"
                     onClick={handleCloseModal}
                   >
@@ -503,7 +502,7 @@ function ProfilePage() {
                 </div>
                 <button
                   type="button"
-                  className="text-slate-300 hover:text-sky-300 p-1 hover:bg-white/10 rounded transition-colors"
+                  className="cursor-target text-slate-300 hover:text-sky-300 p-1 hover:bg-white/10 rounded transition-colors"
                   onClick={handleCloseModal}
                   aria-label="Close"
                 >
@@ -564,7 +563,7 @@ function ProfilePage() {
                 </div>
                 <div className="flex items-center justify-center gap-4 pt-3">
                   <button
-                    className="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 active:brightness-95 text-white font-semibold rounded-3xl transition-all duration-200 min-w-[9rem] shadow-lg hover:shadow-amber-500/20"
+                    className="cursor-target px-6 py-2.5 bg-amber-500 hover:bg-amber-600 active:brightness-95 text-white font-semibold rounded-3xl transition-all duration-200 min-w-[9rem] shadow-lg hover:shadow-amber-500/20"
                     type="submit"
                     disabled={changePasswordMutation.isPending}
                   >
@@ -573,7 +572,7 @@ function ProfilePage() {
                       : "Update password"}
                   </button>
                   <button
-                    className="px-6 py-2.5 bg-slate-600/40 hover:bg-slate-600/60 text-slate-100 font-semibold rounded-3xl transition-all duration-200 min-w-[9rem]"
+                    className="cursor-target px-6 py-2.5 bg-slate-600/40 hover:bg-slate-600/60 text-slate-100 font-semibold rounded-3xl transition-all duration-200 min-w-[9rem]"
                     type="button"
                     onClick={handleCloseModal}
                     disabled={changePasswordMutation.isPending}
