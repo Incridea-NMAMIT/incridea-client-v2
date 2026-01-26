@@ -19,9 +19,9 @@ const Sidebar = ({ token }: SidebarProps) => {
     { icon: Home, path: "/", label: "Home" },
     { icon: Calendar, path: "/events", label: "Events" },
     { icon: Image, path: "/gallery", label: "Gallery" },
+    { icon: User, path: "/profile", label: "Profile" },
     { icon: Info, path: "/about", label: "About" },
     { icon: Phone, path: "/contact", label: "Contact" },
-    { icon: User, path: "/profile", label: "Profile" },
     { icon: ShieldCheck, path: "/privacy", label: "Privacy" },
   ].filter(item => token || item.label !== "Profile");
 
