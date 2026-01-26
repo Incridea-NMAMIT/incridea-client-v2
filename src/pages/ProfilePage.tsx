@@ -19,6 +19,7 @@ import { showToast } from "../utils/toast";
 import { Pencil, QrCode, X } from "lucide-react";
 import LiquidGlassCard from "../components/liquidglass/LiquidGlassCard";
 import InfiniteScroll from "../components/InfiniteScroll";
+import Footer from "../components/Footer";
 
 function ProfilePage() {
   const navigate = useNavigate();
@@ -123,7 +124,7 @@ function ProfilePage() {
         {`@import url('https://fonts.googleapis.com/css2?family=New+Rocker&display=swap');`}
       </style>
       <div className="absolute inset-0 bg-black/40"></div>
-      <section className="relative h-screen overflow-y-auto pt-32 lg:pt-28 lg:pl-12 pb-12 flex flex-col items-center justify-start">
+      <section className="relative h-screen overflow-y-auto pt-32 lg:pt-28 lg:pl-12 pb-2 flex flex-col items-center justify-start">
         {/* Profile Card */}
         <div className="w-full max-w-[95%] sm:max-w-[90%] lg:max-w-[85%] mt-4 px-3 sm:px-4">
           <div className="relative flex w-full gap-4 items-start flex-col xl:flex-row">
@@ -591,6 +592,9 @@ function ProfilePage() {
             </LiquidGlassCard>
           </div>
         )}
+        <div className="w-full mt-20">
+          <Footer />
+        </div>
       </section>
     </div>
   );
