@@ -4,7 +4,7 @@ import {
   Image,
   Info,
   Phone,
-  ShieldCheck,
+
   User,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
@@ -22,7 +22,7 @@ const Sidebar = ({ token }: SidebarProps) => {
     { icon: User, path: "/profile", label: "Profile" },
     { icon: Info, path: "/about", label: "About" },
     { icon: Phone, path: "/contact", label: "Contact" },
-    { icon: ShieldCheck, path: "/privacy", label: "Privacy" },
+
   ].filter(item => token || item.label !== "Profile");
 
   return (

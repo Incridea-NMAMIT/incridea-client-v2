@@ -123,11 +123,11 @@ function ProfilePage() {
         {`@import url('https://fonts.googleapis.com/css2?family=New+Rocker&display=swap');`}
       </style>
       <div className="absolute inset-0 bg-black/40"></div>
-      <section className="relative h-screen overflow-y-auto pt-32 lg:pt-24 pb-12 flex flex-col items-center justify-start">
+      <section className="relative h-screen overflow-y-auto pt-32 lg:pt-28 lg:pl-12 pb-12 flex flex-col items-center justify-start">
         {/* Profile Card */}
         <div className="w-full max-w-[95%] sm:max-w-[90%] lg:max-w-[85%] mt-4 px-3 sm:px-4">
-          <div className="relative flex w-full gap-4 items-start flex-col lg:flex-row">
-            <LiquidGlassCard className="p-4 lg:p-6 rounded-3xl w-full lg:flex-[0_0_33%]">
+          <div className="relative flex w-full gap-4 items-start flex-col xl:flex-row">
+            <LiquidGlassCard className="p-4 lg:p-6 rounded-3xl w-full xl:flex-[0_0_33%]">
               <div className="mt-4"></div>
               {/* Edit Profile Button */}
               <button
@@ -203,8 +203,8 @@ function ProfilePage() {
             </LiquidGlassCard>
 
             {/* Missions Card on the right */}
-            <LiquidGlassCard className="p-4 lg:p-5 rounded-3xl w-full lg:flex-1 overflow-hidden">
-              <div className="grid gap-4 lg:grid-rows-[auto_auto] overflow-hidden">
+            <LiquidGlassCard className="p-4 lg:p-5 rounded-3xl w-full xl:flex-1 overflow-hidden">
+              <div className="grid gap-4 xl:grid-rows-[auto_auto] overflow-hidden">
                 {/* Top Section: Enrolled Missions */}
                 <div className="flex flex-col overflow-hidden">
                   <div className="flex justify-center mb-4 mt-2 w-full">
