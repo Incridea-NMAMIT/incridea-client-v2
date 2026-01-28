@@ -11,7 +11,6 @@ interface MerchBuyModalProps {
   onClose: () => void;
   productName: string;
   productPrice: number;
-  productSize?: string;
 }
 
 const MerchBuyModal = ({
@@ -19,7 +18,6 @@ const MerchBuyModal = ({
   onClose,
   productName,
   productPrice,
-  productSize,
 }: MerchBuyModalProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 

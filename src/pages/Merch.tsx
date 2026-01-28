@@ -153,7 +153,6 @@ const Merch = () => {
         onClose={() => setShowModal(false)}
         productName={tshirtItem.name}
         productPrice={tshirtItem.price}
-        productSize="M"
       />
     </div>
   );
