@@ -1,17 +1,14 @@
-import { useState } from 'react'
-import { Tab } from '@headlessui/react'
+
 import { useQuery } from '@tanstack/react-query'
-import { IndividualBookingForm, TeamBookingForm } from '../components/accommodation/BookingForms'
+import { IndividualBookingForm } from '../components/accommodation/BookingForms'
 import { getAccommodationStats } from '../api/accommodation'
-import { Loader2, Moon, Users, User, ArrowLeft } from 'lucide-react'
+import { Loader2, Moon, User, ArrowLeft } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import clsx from 'clsx'
 import LiquidGlassCard from '../components/liquidglass/LiquidGlassCard'
 
 export default function AccommodationPage() {
-  const [activeTab, setActiveTab] = useState(0)
-
   const { data: stats, isLoading, refetch } = useQuery({
     queryKey: ['accommodationStats'],
     queryFn: getAccommodationStats,
@@ -102,46 +99,22 @@ export default function AccommodationPage() {
                 {/* Booking Forms */}
                 <div className="lg:col-span-2">
                      <LiquidGlassCard>
-                        <Tab.Group selectedIndex={activeTab} onChange={setActiveTab}>
-                            <Tab.List className="flex border-b border-white/10">
-                                <Tab className={({ selected }) =>
-                                    clsx('flex-1 py-4 text-sm font-medium focus:outline-none transition-colors flex justify-center items-center',
-                                    selected ? 'bg-white/10 text-white border-b-2 border-purple-500' : 'text-gray-400 hover:text-white hover:bg-white/5')
-                                }>
-                                    <User className="w-4 h-4 mr-2" /> Individual
-                                </Tab>
-                                <Tab className={({ selected }) =>
-                                    clsx('flex-1 py-4 text-sm font-medium focus:outline-none transition-colors flex justify-center items-center',
-                                    selected ? 'bg-white/10 text-white border-b-2 border-purple-500' : 'text-gray-400 hover:text-white hover:bg-white/5')
-                                }>
-                                    <Users className="w-4 h-4 mr-2" /> Team
-                                </Tab>
-                            </Tab.List>
-                            <Tab.Panels className="p-6">
-                                <Tab.Panel>
-                                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-                                        {accommodationsFull ? (
-                                            <div className="text-center py-10 text-red-400">
-                                                Accommodation is currently full. Please check back later.
-                                            </div>
-                                        ) : (
-                                            <IndividualBookingForm onSuccess={() => refetch()} />
-                                        )}
-                                    </motion.div>
-                                </Tab.Panel>
-                                <Tab.Panel>
-                                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-                                         {accommodationsFull ? (
-                                            <div className="text-center py-10 text-red-400">
-                                                Accommodation is currently full. Please check back later.
-                                            </div>
-                                        ) : (
-                                            <TeamBookingForm onSuccess={() => refetch()} />
-                                        )}
-                                    </motion.div>
-                                </Tab.Panel>
-                            </Tab.Panels>
-                        </Tab.Group>
+                     <LiquidGlassCard>
+                        <div className="p-6">
+                            <h2 className="text-xl font-bold text-white mb-6 flex items-center border-b border-white/10 pb-4">
+                                <User className="w-5 h-5 mr-2 text-purple-500" /> Individual Booking
+                            </h2>
+                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+                                {accommodationsFull ? (
+                                    <div className="text-center py-10 text-red-400">
+                                        Accommodation is currently full. Please check back later.
+                                    </div>
+                                ) : (
+                                    <IndividualBookingForm onSuccess={() => refetch()} />
+                                )}
+                            </motion.div>
+                        </div>
+                     </LiquidGlassCard>
                      </LiquidGlassCard>
                 </div>
             </div>

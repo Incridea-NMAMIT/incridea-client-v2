@@ -24,13 +24,11 @@ import {
 type EventRegistrationProps = {
   eventId: number;
   type: string;
-  fees: number;
 };
 
 export default function EventRegistration({
   eventId,
   type,
-  fees,
 }: EventRegistrationProps) {
   const { data: userData, isLoading: isUserLoading } = useQuery({
     queryKey: ["me"],
@@ -200,18 +198,9 @@ export default function EventRegistration({
           )}
         </div>
 
-        {(fees === 0 || !team.confirmed) && isLeader && (
+        {isLeader && (
           <div className="pt-2">
-            {!team.confirmed && fees > 0 && (
-              <button
-                className="w-full rounded-lg bg-teal-600 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-500 transition-colors cursor-target"
-                onClick={() => alert("Payment integration pending")}
-              >
-                Pay ₹{fees} to Confirm
-              </button>
-            )}
-
-            {!team.confirmed && fees === 0 && (
+            {!team.confirmed && (
               <button
                 className="w-full rounded-lg bg-teal-600 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-500 transition-colors cursor-target"
                 onClick={() => confirmTeamMutation.mutate(team.id)}
@@ -244,7 +233,7 @@ export default function EventRegistration({
           </div>
         )}
 
-        {(fees === 0 || !team.confirmed) && !isLeader && (
+        {!isLeader && (
           <button
             onClick={() => leaveTeamMutation.mutate(team.id)}
             className="w-full flex items-center justify-center gap-2 text-xs text-red-400 hover:text-red-300 mt-2 cursor-target"
@@ -295,11 +284,9 @@ export default function EventRegistration({
         onClick={() => registerSoloMutation.mutate(eventId)}
         disabled={registerSoloMutation.isPending}
       >
-        {fees > 0
-          ? `Pay ₹${fees} & Register`
-          : registerSoloMutation.isPending
-            ? "Registering..."
-            : "Register Now"}
+        {registerSoloMutation.isPending
+          ? "Registering..."
+          : "Register Now"}
         <span className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-300">
           <span className="absolute -left-1/2 top-0 h-full w-1/2 rotate-12 bg-linear-to-r from-transparent via-white/40 to-transparent blur-md" />
         </span>
