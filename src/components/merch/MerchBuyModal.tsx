@@ -105,7 +105,7 @@ const MerchBuyModal = ({
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ type: "spring", stiffness: 200, damping: 10, delay: 0.1 }}
-                      className="w-24 h-24 bg-emerald-500 rounded-full flex items-center justify-center mb-6 shadow-[0_0_50px_rgba(16,185,129,0.5)]"
+                      className="w-24 h-24 bg-[#5924ae] rounded-full flex items-center justify-center mb-6 shadow-[0_0_50px_rgba(89,36,174,0.5)]"
                     >
                       <CheckCircle className="w-12 h-12 text-white" />
                     </motion.div>
@@ -147,10 +147,10 @@ const MerchBuyModal = ({
                     </div>
 
                     {/* Price Display */}
-                    <div className="mb-6 sm:mb-8 p-3 sm:p-4 bg-gradient-to-r from-emerald-500/10 to-emerald-600/10 border border-emerald-500/30 rounded-lg">
+                    <div className="mb-6 sm:mb-8 p-3 sm:p-4 bg-gradient-to-r from-[#5924ae]/10 to-[#4a1d91]/10 border border-[#5924ae]/30 rounded-lg">
                       <div className="flex justify-between items-center">
                         <span className="text-2xl sm:text-3xl font-bold text-white mb-1 sm:mb-2 ">Order Total</span>
-                        <span className="text-2xl sm:text-3xl font-bold text-emerald-400">
+                        <span className="text-2xl sm:text-3xl font-bold text-[#bca4ff]">
                           ₹{productPrice}
                         </span>
                       </div>
@@ -162,7 +162,7 @@ const MerchBuyModal = ({
                         {/* Name */}
                         <div>
                           <label className="flex items-center text-xs sm:text-sm font-black text-white tracking-tight mb-2 sm:mb-3">
-                            <User className="w-4 sm:w-5 h-4 sm:h-5 mr-2.5 text-purple-400" />
+                            <User className="w-4 sm:w-5 h-4 sm:h-5 mr-2.5 text-[#bca4ff]" />
                             Name
                           </label>
                           <input
@@ -171,7 +171,7 @@ const MerchBuyModal = ({
                             placeholder="Enter your name"
                             className={`w-full px-4 sm:px-5 py-3 sm:py-3.5 rounded-xl bg-gradient-to-br from-white/8 to-white/3 backdrop-blur-xl border text-white text-xs sm:text-sm placeholder-gray-500/70 transition-all focus:outline-none group ${errors.name
                                 ? "border-red-500/50 focus:bg-red-500/10 focus:border-red-500"
-                                : "border-white/20 focus:bg-white/15 focus:border-purple-400/50"
+                                : "border-white/20 focus:bg-white/15 focus:border-[#bca4ff]/50"
                               }`}
                           />
                           {errors.name && (
@@ -182,7 +182,7 @@ const MerchBuyModal = ({
                         {/* USN */}
                         <div>
                           <label className="flex items-center text-xs sm:text-sm font-black text-white tracking-tight mb-2 sm:mb-3">
-                            <Zap className="w-4 sm:w-5 h-4 sm:h-5 mr-2.5 text-purple-400" />
+                            <Zap className="w-4 sm:w-5 h-4 sm:h-5 mr-2.5 text-[#bca4ff]" />
                             USN
                           </label>
                           <input
@@ -191,7 +191,7 @@ const MerchBuyModal = ({
                             placeholder="e.g., NNMXXYYZZZ"
                             className={`w-full px-4 sm:px-5 py-3 sm:py-3.5 rounded-xl bg-gradient-to-br from-white/8 to-white/3 backdrop-blur-xl border text-white text-xs sm:text-sm placeholder-gray-500/70 transition-all focus:outline-none ${errors.usn
                                 ? "border-red-500/50 focus:bg-red-500/10 focus:border-red-500"
-                                : "border-white/20 focus:bg-white/15 focus:border-purple-400/50"
+                                : "border-white/20 focus:bg-white/15 focus:border-[#bca4ff]/50"
                               }`}
                           />
                           {errors.usn && (
@@ -203,7 +203,7 @@ const MerchBuyModal = ({
                       {/* College Name */}
                       <div>
                         <label className="flex items-center text-xs sm:text-sm font-black text-white tracking-tight mb-2 sm:mb-3">
-                          <Building2 className="w-4 sm:w-5 h-4 sm:h-5 mr-2.5 text-purple-400" />
+                          <Building2 className="w-4 sm:w-5 h-4 sm:h-5 mr-2.5 text-[#bca4ff]" />
                           College Name
                         </label>
                         <input
@@ -212,7 +212,7 @@ const MerchBuyModal = ({
                           placeholder="Enter your college name"
                           className={`w-full px-4 sm:px-5 py-3 sm:py-3.5 rounded-xl bg-gradient-to-br from-white/8 to-white/3 backdrop-blur-xl border text-white text-xs sm:text-sm placeholder-gray-500/70 transition-all focus:outline-none ${errors.collegeName
                               ? "border-red-500/50 focus:bg-red-500/10 focus:border-red-500"
-                              : "border-white/20 focus:bg-white/15 focus:border-purple-400/50"
+                              : "border-white/20 focus:bg-white/15 focus:border-[#bca4ff]/50"
                             }`}
                         />
                         {errors.collegeName && (
@@ -225,12 +225,12 @@ const MerchBuyModal = ({
                         {/* Size */}
                         <div>
                           <label className="flex items-center text-xs sm:text-sm font-black text-white tracking-tight mb-2 sm:mb-3">
-                            <Package className="w-4 sm:w-5 h-4 sm:h-5 mr-2.5 text-purple-400" />
+                            <Package className="w-4 sm:w-5 h-4 sm:h-5 mr-2.5 text-[#bca4ff]" />
                             T-Shirt Size
                           </label>
                           <select
                             {...register("size")}
-                            className={`w-full bg-slate-950/50 border border-white/10 rounded-lg px-3 py-3.5 text-sm text-white focus:outline-none focus:border-sky-500/50 transition-all appearance-none cursor-pointer ${errors.size ? "border-red-500/50" : ""
+                            className={`w-full bg-slate-950/50 border border-white/10 rounded-lg px-3 py-3.5 text-sm text-white focus:outline-none focus:border-[#bca4ff]/50 transition-all appearance-none cursor-pointer ${errors.size ? "border-red-500/50" : ""
                               }`}
                           >
                             <option value="">Select a size</option>
@@ -249,12 +249,12 @@ const MerchBuyModal = ({
                         {/* Semester */}
                         <div>
                           <label className="flex items-center text-xs sm:text-sm font-black text-white tracking-tight mb-2 sm:mb-3">
-                            <Zap className="w-4 sm:w-5 h-4 sm:h-5 mr-2.5 text-purple-400" />
+                            <Zap className="w-4 sm:w-5 h-4 sm:h-5 mr-2.5 text-[#bca4ff]" />
                             Semester
                           </label>
                           <select
                             {...register("semester")}
-                            className={`w-full bg-slate-950/50 border border-white/10 rounded-lg px-3 py-3.5 text-sm text-white focus:outline-none focus:border-sky-500/50 transition-all appearance-none cursor-pointer ${errors.semester ? "border-red-500/50" : ""
+                            className={`w-full bg-slate-950/50 border border-white/10 rounded-lg px-3 py-3.5 text-sm text-white focus:outline-none focus:border-[#bca4ff]/50 transition-all appearance-none cursor-pointer ${errors.semester ? "border-red-500/50" : ""
                               }`}
                           >
                             <option value="">Select semester</option>
@@ -276,7 +276,7 @@ const MerchBuyModal = ({
                       {/* Branch */}
                       <div>
                         <label className="flex items-center text-xs sm:text-sm font-black text-white tracking-tight mb-2 sm:mb-3">
-                          <Building2 className="w-4 sm:w-5 h-4 sm:h-5 mr-2.5 text-purple-400" />
+                          <Building2 className="w-4 sm:w-5 h-4 sm:h-5 mr-2.5 text-[#bca4ff]" />
                           Branch
                         </label>
                         <input
@@ -285,7 +285,7 @@ const MerchBuyModal = ({
                           placeholder="e.g., CSE, ECE"
                           className={`w-full px-4 sm:px-5 py-3 sm:py-3.5 rounded-xl bg-gradient-to-br from-white/8 to-white/3 backdrop-blur-xl border text-white text-xs sm:text-sm placeholder-gray-500/70 transition-all focus:outline-none ${errors.branch
                               ? "border-red-500/50 focus:bg-red-500/10 focus:border-red-500"
-                              : "border-white/20 focus:bg-white/15 focus:border-purple-400/50"
+                              : "border-white/20 focus:bg-white/15 focus:border-[#bca4ff]/50"
                             }`}
                         />
                         {errors.branch && (
@@ -309,7 +309,7 @@ const MerchBuyModal = ({
                           disabled={isSubmitting}
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
-                          className="flex-1 px-4 sm:px-5 py-3 sm:py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-bold text-xs sm:text-sm transition-all shadow-lg hover:shadow-emerald-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="flex-1 px-4 sm:px-5 py-3 sm:py-3.5 rounded-xl bg-gradient-to-r from-[#4a1d91] to-[#5924ae] text-white font-bold text-xs sm:text-sm transition-all shadow-lg hover:shadow-[0_0_30px_rgba(89,36,174,0.4)] disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           {isSubmitting ? "Processing..." : "Pay"}
                         </motion.button>

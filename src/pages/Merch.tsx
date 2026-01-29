@@ -1,5 +1,5 @@
 import { useState, Suspense } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion"; // Removed unused useScroll, useTransform
 import LiquidGlassCard from "../components/liquidglass/LiquidGlassCard";
 import MerchBuyModal from "../components/merch/MerchBuyModal";
 import TShirt3DModel from "../components/merch/TShirt3DModel";
@@ -29,15 +29,6 @@ const Merch = () => {
   const [showModal, setShowModal] = useState(false);
   const defaultSize = "M";
 
-  // Scroll Animation Hooks
-  const { scrollY } = useScroll();
-  // Fade out opacity from 1 to 0 as user scrolls from 0px to 300px
-  const headerOpacity = useTransform(scrollY, [0, 300], [1, 0]);
-  // Move header up slightly as it fades
-  const headerY = useTransform(scrollY, [0, 300], [0, -50]);
-  // Disable pointer events when faded out so it doesn't block clicks
-  const headerPointerEvents = useTransform(scrollY, (y) => y > 300 ? 'none' : 'auto');
-
   const tshirtItem = {
     id: "tshirt",
     name: "Incridea T-Shirt",
@@ -60,7 +51,7 @@ const Merch = () => {
   };
 
   return (
-    <div className="relative min-h-screen font-sans selection:bg-emerald-500/30 overflow-x-hidden">
+    <div className="relative min-h-screen font-sans selection:bg-purple-500/30 overflow-x-hidden">
       <style>{styles}</style>
 
       {/* Background */}
@@ -72,34 +63,17 @@ const Merch = () => {
         <div className="absolute inset-0 bg-[linear-gradient(rgba(52,211,153,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(52,211,153,0.03)_1px,transparent_1px)] bg-[size:50px_50px] opacity-50" />
       </div>
 
-      {/* Container with responsive padding */}
-      <div className="pt-10 pb-32 px-4 sm:px-6 lg:px-8 max-w-[1350px] mx-auto min-h-screen flex flex-col justify-center">
-
-        {/* HEADER WITH SCROLL ANIMATION */}
-        <motion.header
-          className="mb-8 sm:mb-12 lg:mb-16 text-center sticky top-0 z-0"
-          style={{
-            opacity: headerOpacity,
-            y: headerY,
-            pointerEvents: headerPointerEvents
-          }}
-          transition={{ duration: 0.8 }}
-        >
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-white to-emerald-400 tracking-tighter uppercase drop-shadow-[0_0_25px_rgba(52,211,153,0.4)] mb-3 sm:mb-4">
-            Merch Incridea
-          </h1>
-          <p className="text-emerald-400/80 font-mono text-[10px] sm:text-xs md:text-sm tracking-widest uppercase">&gt; Exclusive event gear_</p>
-        </motion.header>
-
-        {/* UNIFIED CARD - z-10 ensures it slides OVER the fading header */}
+      {/* Container with responsive padding - Centered Vertically & Horizontally */}
+      <div className="py-10 px-4 sm:px-6 lg:px-8 max-w-[1350px] mx-auto min-h-screen flex flex-col justify-center items-center">
+        
+        {/* UNIFIED CARD */}
         <motion.div
-          className="relative z-10"
+          className="relative z-10 w-full"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8 }}
         >
           <LiquidGlassCard className="p-0 !rounded-2xl sm:!rounded-[2.5rem] overflow-hidden border border-white/10 relative w-full">
-
 
             {/* Responsive Grid - With Creative Separator */}
             <div className="grid grid-cols-1 xl:grid-cols-2 relative z-10 w-full">
@@ -129,9 +103,6 @@ const Merch = () => {
 
                 {/* 3D Model - Directly on Glass */}
                 <div className="relative w-full h-full min-h-[500px] flex flex-col items-center justify-center overflow-hidden">
-
-
-
                   <div className="relative w-full h-full flex items-center justify-center z-20 cursor-default pointer-events-none">
                     <Suspense
                       fallback={
@@ -218,18 +189,18 @@ const Merch = () => {
                   </div>
                 </div>
 
-                {/* Price & Action Block - Moved Here */}
+                {/* Price & Action Block */}
                 <div className="mt-auto space-y-4 pt-4 border-t border-white/5">
                   <div className="flex justify-between items-center px-1">
                     <span className="text-gray-400 text-[10px] sm:text-xs font-mono uppercase tracking-widest">Total Price</span>
                     <span className="text-2xl sm:text-3xl font-black text-white font-mono tracking-tight">₹{tshirtItem.price}</span>
                   </div>
 
-                  {/* BUTTON */}
+                  {/* BUTTON - UPDATED TO PURPLE (#5924ae) */}
                   <button
                     onClick={handleBuyClick}
                     style={{ cursor: 'pointer' }}
-                    className="relative w-full py-3 sm:py-4 -skew-x-[20deg] bg-[#00a676]/90 hover:bg-[#00a676] text-white font-black uppercase tracking-[0.15em] text-xs sm:text-sm rounded-lg border border-white/20 shadow-[0_0_30px_rgba(0,166,118,0.3)] hover:shadow-[0_0_50px_rgba(0,166,118,0.5)] backdrop-blur-md transition-all duration-300 overflow-hidden group cursor-pointer z-50 pointer-events-auto cursor-target"
+                    className="relative w-full py-3 sm:py-4 -skew-x-[20deg] bg-[#5924ae] hover:bg-[#4a1d91] text-white font-black uppercase tracking-[0.15em] text-xs sm:text-sm rounded-lg border border-white/20 shadow-[0_0_30px_rgba(89,36,174,0.4)] hover:shadow-[0_0_50px_rgba(89,36,174,0.6)] backdrop-blur-md transition-all duration-300 overflow-hidden group cursor-pointer z-50 pointer-events-auto cursor-target"
                   >
                     {/* Content un-skewed */}
                     <span className="relative z-10 flex items-center justify-center gap-2 skew-x-[20deg] pointer-events-none">
