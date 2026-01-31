@@ -35,12 +35,12 @@ function RegisterPage() {
   useEffect(() => {
     // If we have no token, or if fetchMe failed
     if (!isUserLoading && !userData) {
-        window.location.href = `${import.meta.env.VITE_AUTH_URL}/?redirect=${window.location.href}`
+        window.location.href = `${import.meta.env.VITE_AUTH_URL}/?redirect=${encodeURIComponent(window.location.href)}`
         return
     }
     
     if (!isUserLoading && isUserError) {
-         window.location.href = `${import.meta.env.VITE_AUTH_URL}/?redirect=${window.location.href}`
+         window.location.href = `${import.meta.env.VITE_AUTH_URL}/?redirect=${encodeURIComponent(window.location.href)}`
     }
   }, [isUserLoading, isUserError])
 

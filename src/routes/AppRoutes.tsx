@@ -28,9 +28,9 @@ const AuthRedirect = () => {
     return null;
   }
 
-  window.location.href = `${import.meta.env.VITE_AUTH_URL}/?redirect=${
+  window.location.href = `${import.meta.env.VITE_AUTH_URL}/?redirect=${encodeURIComponent(
     window.location.origin
-  }`;
+  )}`;
   return null;
 };
 
